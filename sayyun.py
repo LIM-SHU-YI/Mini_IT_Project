@@ -21,7 +21,7 @@ BLUE = (0, 0, 255)
 # Player settings
 dogdog_width, dogdog_height = 40, 60
 dogdog_x, dogdog_y = 50, HEIGHT - dogdog_height - 20
-dogdog_speed =7  # Move speed per click
+dogdog_speed =50  # Move speed per click
 
 # Obstacle settings
 obstacle_width, obstacle_height = 50, 50
@@ -45,14 +45,14 @@ time_limit = 25  # 10 seconds to reach the finish line
 start_time = time.time()
 
 # Load images
-background_pic = pygame.image.load(r"c:\Users\User\Downloads\PYTHON\background.png")
+background_pic = pygame.image.load("running_race/background.png")
 background_pic = pygame.transform.scale(background_pic, (WIDTH, HEIGHT))  # Resize the image to match the screen dimensions
-dogdog_pic = pygame.image.load(r"c:\Users\User\Downloads\PYTHON\dog.png")
+dogdog_pic = pygame.image.load("running_race/dog.png")
 dogdog_pic = pygame.transform.scale(dogdog_pic, (dogdog_width, dogdog_height))  # Resize the image to match player dimensions
 
 # Game loop
 running = True
-dogdog_won = False
+dogdog_win = False
 
 while running:
     # Draw background image instead of filling with color
@@ -119,7 +119,7 @@ while running:
 
 # End game message
 screen.blit(background_pic, (0, 0))
-if dogdog_won:
+if dogdog_win:
     endtxt = font.render("You Win!", True, GREEN)
 else:
     endtxt = font.render("Game Over", True, BLACK)
