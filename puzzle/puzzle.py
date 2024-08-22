@@ -70,11 +70,12 @@ class puzzle:
 
     def mouseinteraction(self, interaction):
         if interaction.type == pygame.MOUSEBUTTONDOWN:
-            for tile in self.tiles:
+            for i, tile in enumerate(self.tiles):
                 if tile.rect.collidepoint(interaction.pos):
                     tile.drag = True
                     tile.dragstart = interaction.pos
                     tile.originalrect = tile.rect.copy()
+                    self.tiles.append(self.tiles.pop(i))
                     break
         elif interaction.type == pygame.MOUSEBUTTONUP:
             for tile in self.tiles:
