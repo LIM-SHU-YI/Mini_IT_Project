@@ -16,23 +16,43 @@ WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
 RED = (255, 0, 0)
 GREEN = (0, 255, 0)
-BLUE = (0, 0, 255)
 
 # Player settings
-dogdog_width, dogdog_height = 40, 60
+dogdog_width, dogdog_height = 90, 80
 dogdog_x, dogdog_y = 50, HEIGHT - dogdog_height - 20
-dogdog_speed =50  # Move speed per click
+dogdog_speed = 25  # Move speed per click
 
 # Obstacle settings
-obstacle_width, obstacle_height = 50, 50
-obstacle_speed = 5
+obstacle_width, obstacle_height = 120, 80
+obstacle_speed = 8
+obstacle_spacing = 65  # Increased horizontal spacing
+vertical_spacing = 115  # Increased vertical spacing between obstacles
 obstacles = []
 
-# Generate obstacles
-for obstacle in range(6):
-    obstacle_x = random.randint(WIDTH // 2, WIDTH - obstacle_width)
-    obstacle_y = random.randint(0, HEIGHT - obstacle_height)
-    obstacles.append(pygame.Rect(obstacle_x, obstacle_y, obstacle_width, obstacle_height))
+# Load images
+background_pic = pygame.image.load("running_race/riverbackground.png")
+background_pic = pygame.transform.scale(background_pic, (WIDTH, HEIGHT))
+dogdog_pic1 = pygame.image.load("running_race/dog_1.png")
+dogdog_pic1 = pygame.transform.scale(dogdog_pic1, (dogdog_width, dogdog_height))
+dogdog_pic2 = pygame.image.load("running_race/dog_2.png")
+dogdog_pic2 = pygame.transform.scale(dogdog_pic2, (dogdog_width, dogdog_height))
+current_dog_pic = dogdog_pic1
+obstacle_pic = pygame.image.load("running_race/obstacle_1.png")
+obstacle_pic = pygame.transform.scale(obstacle_pic, (obstacle_width, obstacle_height))
+
+# Initialize the first obstacle
+def create_obstacle(x):
+    while True:
+        obstacle_y = random.randint(0, HEIGHT - obstacle_height)
+        if not obstacles or abs(obstacle_y - obstacles[-1].y) > vertical_spacing:
+            break
+    return pygame.Rect(x, obstacle_y, obstacle_width, obstacle_height)
+
+# Generate initial obstacles
+last_x = WIDTH
+for _ in range(15):
+    last_x += random.randint(obstacle_spacing, obstacle_spacing * 2)
+    obstacles.append(create_obstacle(last_x))
 
 # Finish line
 finishline = WIDTH - 100
@@ -41,30 +61,24 @@ finishline = WIDTH - 100
 font = pygame.font.SysFont(None, 48)
 
 # Timer settings
-time_limit = 25  # 10 seconds to reach the finish line
+time_limit = 20  # 25 seconds to reach the finish line
 start_time = time.time()
-
-# Load images
-background_pic = pygame.image.load("running_race/background.png")
-background_pic = pygame.transform.scale(background_pic, (WIDTH, HEIGHT))  # Resize the image to match the screen dimensions
-dogdog_pic = pygame.image.load("running_race/dog.png")
-dogdog_pic = pygame.transform.scale(dogdog_pic, (dogdog_width, dogdog_height))  # Resize the image to match player dimensions
 
 # Game loop
 running = True
 dogdog_win = False
 
+# Animation toggle
+frame_toggle = True
+
 while running:
-    # Draw background image instead of filling with color
     screen.blit(background_pic, (0, 0))
 
-    # Calculate time left
     time_left = time_limit - (time.time() - start_time)
     if time_left <= 0:
         time_left = 0
         running = False
 
-    # Check for events
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             pygame.quit()
@@ -79,45 +93,42 @@ while running:
             if event.key == pygame.K_DOWN:
                 dogdog_y += dogdog_speed
 
-    # Keep player within screen bounds
+            if frame_toggle:
+                current_dog_pic = dogdog_pic2
+            else:
+                current_dog_pic = dogdog_pic1
+            frame_toggle = not frame_toggle
+
     dogdog_x = max(0, min(dogdog_x, WIDTH - dogdog_width))
     dogdog_y = max(0, min(dogdog_y, HEIGHT - dogdog_height))
 
-    # Draw player
     dogdog_rect = pygame.Rect(dogdog_x, dogdog_y, dogdog_width, dogdog_height)
-    screen.blit(dogdog_pic, dogdog_rect)
+    screen.blit(current_dog_pic, dogdog_rect.topleft)
 
-    # Move and draw obstacles
     for obstacle in obstacles:
         obstacle.x -= obstacle_speed
         if obstacle.x < -obstacle_width:
-            obstacle.x = WIDTH
-            obstacle.y = random.randint(0, HEIGHT - obstacle_height)
-        pygame.draw.rect(screen, BLUE, obstacle)
+            obstacles.remove(obstacle)
+            new_obstacle_x = WIDTH + obstacle_width
+            obstacles.append(create_obstacle(new_obstacle_x))
 
-    # Draw finish line
+        screen.blit(obstacle_pic, obstacle.topleft)
+
     pygame.draw.line(screen, BLACK, (finishline, 0), (finishline, HEIGHT), 5)
 
-    # Draw timer
     timer_text = font.render(f"Time Left: {int(time_left)}s", True, BLACK)
     screen.blit(timer_text, (10, 10))
 
-    # Check if player collides with an obstacle
     if any(obstacle.colliderect(dogdog_rect) for obstacle in obstacles):
-        running = False  # End the game if collision occurs
+        running = False
 
-    # Check if player reaches the finish line
     if dogdog_x + dogdog_width >= finishline:
         dogdog_win = True
         running = False
 
-    # Update display
     pygame.display.flip()
-
-    # Frame rate
     pygame.time.Clock().tick(30)
 
-# End game message
 screen.blit(background_pic, (0, 0))
 if dogdog_win:
     endtxt = font.render("You Win!", True, GREEN)
@@ -127,6 +138,5 @@ else:
 screen.blit(endtxt, (WIDTH // 2 - 100, HEIGHT // 2 - 50))
 pygame.display.flip()
 pygame.time.wait(3000)
-
 
 pygame.quit()
