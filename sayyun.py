@@ -22,7 +22,7 @@ dogdog_speed = 25
 obstacle_width, obstacle_height = 120, 80
 obstacle_speed = 8
 obstacle_spacing = 65 
-vertical_spacing = 115
+vertical_spacing = 125
 obstacles = []
 
 background_pic = pygame.image.load("running_race/riverbackground.png")
