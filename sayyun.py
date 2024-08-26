@@ -35,6 +35,9 @@ current_dog_pic = dogdog_pic1
 obstacle_pic = pygame.image.load("running_race/obstacle_1.png")
 obstacle_pic = pygame.transform.scale(obstacle_pic, (obstacle_width, obstacle_height))
 
+dogdog_mask = pygame.mask.from_surface(current_dog_pic)
+obstacle_mask = pygame.mask.from_surface(obstacle_pic)
+
 # Initialize the first obstacle
 def create_obstacle(x):
     while True:
@@ -97,6 +100,8 @@ while running:
     dogdog_rect = pygame.Rect(dogdog_x, dogdog_y, dogdog_width, dogdog_height)
     screen.blit(current_dog_pic, dogdog_rect.topleft)
 
+    dogdog_mask = pygame.mask.from_surface(current_dog_pic)
+
     for obstacle in obstacles:
         obstacle.x -= obstacle_speed
         if obstacle.x < -obstacle_width:
@@ -105,6 +110,14 @@ while running:
             obstacles.append(create_obstacle(new_obstacle_x))
 
         screen.blit(obstacle_pic, obstacle.topleft)
+
+        obstacle_rect = pygame.Rect(obstacle.x, obstacle.y, obstacle_width, obstacle_height)
+
+        # Check for pixel-perfect collision
+        offset = (obstacle_rect.x - dogdog_rect.x, obstacle_rect.y - dogdog_rect.y)
+        if dogdog_mask.overlap(obstacle_mask, offset):
+            running = False
+
 
     pygame.draw.line(screen, BLACK, (finishline, 0), (finishline, HEIGHT), 5)
 
