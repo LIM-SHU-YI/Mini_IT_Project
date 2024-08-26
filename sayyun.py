@@ -6,30 +6,25 @@ import random
 # Initialize Pygame
 pygame.init()
 
-# Screen settings
 WIDTH, HEIGHT = 1280, 720
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Running Race Mini-Game")
 
-# Colors
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
 RED = (255, 0, 0)
 GREEN = (0, 255, 0)
 
-# Player settings
 dogdog_width, dogdog_height = 90, 80
 dogdog_x, dogdog_y = 50, HEIGHT - dogdog_height - 20
-dogdog_speed = 25  # Move speed per click
+dogdog_speed = 25 
 
-# Obstacle settings
 obstacle_width, obstacle_height = 120, 80
 obstacle_speed = 8
-obstacle_spacing = 65  # Increased horizontal spacing
-vertical_spacing = 115  # Increased vertical spacing between obstacles
+obstacle_spacing = 65 
+vertical_spacing = 115
 obstacles = []
 
-# Load images
 background_pic = pygame.image.load("running_race/riverbackground.png")
 background_pic = pygame.transform.scale(background_pic, (WIDTH, HEIGHT))
 dogdog_pic1 = pygame.image.load("running_race/dog_1.png")
@@ -54,13 +49,10 @@ for _ in range(15):
     last_x += random.randint(obstacle_spacing, obstacle_spacing * 2)
     obstacles.append(create_obstacle(last_x))
 
-# Finish line
 finishline = WIDTH - 100
 
-# Font settings
 font = pygame.font.SysFont(None, 48)
 
-# Timer settings
 time_limit = 20  # 25 seconds to reach the finish line
 start_time = time.time()
 
