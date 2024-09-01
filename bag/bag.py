@@ -34,7 +34,9 @@ class item(pygame.sprite.Sprite):
     def update(self):
         if self.dragging:
             mousex,mousey=pygame.mouse.get_pos()
-            self.rect.center=(mousex,mousey)
+            newx=min(max(mousex,self.rect.width//2),width-self.rect.width//2)
+            newy=min(max(mousey,self.rect.height//2),height-self.rect.height//2)
+            self.rect.center=(newx,newy)
             self.transparent_rect.center=self.rect.center
 
 item1=item(item1,(600,150),(1,1))
