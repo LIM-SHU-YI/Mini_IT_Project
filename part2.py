@@ -1,7 +1,7 @@
 import pygame
 import common
 from button import Button
-from  p2interact import p2int
+from p2interact import p2int
 
 # settings for the window of the game
 SCREEN_WIDTH = 1280

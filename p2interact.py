@@ -12,6 +12,12 @@ pygame.display.set_icon(icon)
 # Track the current drag object
 current_dragging_obj = None
 
+# Event tracking variables
+dogfood_dropped = False
+water_dropped = False
+toy_dropped = False
+bone_dropped = False
+
 # Define the DraggableObject class
 class DraggableObject:
     def __init__(self, image, center, draggable=True, visible=True):
@@ -28,7 +34,7 @@ class DraggableObject:
             screen.blit(self.image, self.rect.topleft)
 
     def handle_event(self, event, other=None):
-        global current_dragging_obj  # Use the global to track the current drag object
+        global current_dragging_obj, dogfood_dropped, water_dropped, toy_dropped, bone_dropped # Use the global to track the current drag object
 
         if not self.draggable:
             return
@@ -50,9 +56,19 @@ class DraggableObject:
                 if self == dogfood_obj:
                 # Only set redfull_obj visible when dogfood_obj is dropped on it
                     redfull_obj.visible = True
+                    dogfood_dropped = True  # Mark dogfood event as occurred
+                    
                 elif self == water_obj:
                     # Ensure bluewater_obj is not affected by dogfood_obj drop
                     bluewater_obj.visible = True
+                    water_dropped = True  # Mark water event as occurred
+
+                elif self == toy_obj:
+                    toy_dropped = True
+
+                elif self == bone_obj:
+                    bone_dropped = True
+                    
             # Reset the position to the original center when the mouse is released
             self.rect.center = self.original_center
 
@@ -93,13 +109,13 @@ water_obj = DraggableObject(water, (1050, 627))
 toy_obj = DraggableObject(toy, (240, 624))
 dogfood_obj = DraggableObject(dogfood, (525, 625))
 bone_obj = DraggableObject(bone, (805, 625))
-sdog_obj = DraggableObject(sdog, (635, 283),draggable=False)
+sdog_obj = DraggableObject(sdog, (635, 283), draggable=False)
 
 # Main function
 def p2int():
     common.running = True
     global current_dragging_obj
-    
+
     while common.running:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -117,9 +133,9 @@ def p2int():
             # Handle events for the draggable water object only, and pass blueempty_obj to check collision on drop
             water_obj.handle_event(event, blueempty_obj)
             dogfood_obj.handle_event(event, redfull_obj)
-            toy_obj.handle_event(event)
-            bone_obj.handle_event(event)
-            sdog_obj.handle_event(event)
+            toy_obj.handle_event(event, sdog_obj)
+            bone_obj.handle_event(event, sdog_obj)
+            # sdog_obj.handle_event(event)
 
         # Clear screen
         screen.blit(clear, (0, 0))
@@ -132,6 +148,17 @@ def p2int():
         # Draw the currently dragged object last, if any
         if current_dragging_obj:
             current_dragging_obj.draw(screen)
+
+        tracking_count = sum([dogfood_dropped, water_dropped, toy_dropped, bone_dropped])
+        # display hearts based on number of tracking triggered
+        if tracking_count == 4:
+            screen.blit(heart4, (0, 0))  # Display heart4 if all four events occurred
+        elif tracking_count == 3:
+            screen.blit(heart3, (0, 0))  # Display heart3 if three events occurred
+        elif tracking_count == 2:
+            screen.blit(heart2, (0, 0))  # Display heart2 if two events occurred
+        elif tracking_count == 1:
+            screen.blit(heart, (0, 0))   # Display heart if only one event occurred
 
 
         if common.music_button.visible:
