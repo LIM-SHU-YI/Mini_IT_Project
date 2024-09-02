@@ -142,6 +142,12 @@ else:
 
 screen.blit(endtxt, (WIDTH // 2 - 100, HEIGHT // 2 - 50))
 pygame.display.flip()
-pygame.time.wait(3000)
+
+# Keep the game window open until the user closes it
+waiting = True
+while waiting:
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            waiting = False
 
 pygame.quit()
