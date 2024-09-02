@@ -41,12 +41,12 @@ def credits(event):
             pygame.time.delay(250)
             common.current_scene = "main_menu"  # Go back to main menu
 
-        if common.music_button.visible and common.music_button.checkforinput(pygame.mouse.get_pos()):
-            common.click.play()
-            common.music_on_off()
-        elif common.mute_button.visible and common.mute_button.checkforinput(pygame.mouse.get_pos()):
-            common.click.play()
-            common.music_on_off()
+            if common.music_button.visible and common.music_button.checkforinput(pygame.mouse.get_pos()):
+                common.click.play()
+                common.music_on_off()
+            elif common.mute_button.visible and common.mute_button.checkforinput(pygame.mouse.get_pos()):
+                common.click.play()
+                common.music_on_off()
 
     return_button.update(screen)
 
