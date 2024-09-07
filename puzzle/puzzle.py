@@ -190,10 +190,10 @@ def puzzle():
     pygame.quit()
 
 # debug
-running=True
-while running:
-    puzzle()
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            running = False
-            break
+# running=True
+# while running:
+#     puzzle()
+#     for event in pygame.event.get():
+#         if event.type == pygame.QUIT:
+#             running = False
+#             break
