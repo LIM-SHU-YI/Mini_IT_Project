@@ -104,10 +104,10 @@ def bag():
     sys.exit()
 
 # debug
-running=True
-while running:
-    bag()
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            running = False
-            break
+# running=True
+# while running:
+#     bag()
+#     for event in pygame.event.get():
+#         if event.type == pygame.QUIT:
+#             running = False
+#             break
