@@ -12,16 +12,16 @@ pygame.display.set_caption('Put item into bag')
 Black=(0,0,0)
 White=(255,255,255)
 
-background=pygame.image.load('bagasset/5.png')
-bag=pygame.image.load('bagasset/1.png')
-item1=pygame.image.load('bagasset/2.png')
-item2=pygame.image.load('bagasset/3.png')
-item3=pygame.image.load('bagasset/4.png')
+background=pygame.image.load('bag/bagasset/5.png')
+bag=pygame.image.load('bag/bagasset/1.png')
+item1=pygame.image.load('bag/bagasset/2.png')
+item2=pygame.image.load('bag/bagasset/3.png')
+item3=pygame.image.load('bag/bagasset/4.png')
 
 bag=pygame.transform.scale(bag,(450,300))
 item1=pygame.transform.scale(item1,(200,200))
-item2=pygame.transform.scale(item2,(500,300))
-item3=pygame.transform.scale(item3,(450,300))
+item2=pygame.transform.scale(item2,(300,200))
+item3=pygame.transform.scale(item3,(250,250))
 
 class item(pygame.sprite.Sprite):
     def __init__(self,image,pos,rectsize):
@@ -50,8 +50,8 @@ smallbagrect.center=bagrect.center
 
 itemdragged=None
 
-font=pygame.font.Font('bagasset/font.ttf',74)
-instructionfont=pygame.font.Font('bagasset/font.ttf',50)
+font=pygame.font.Font('bag/bagasset/font.ttf',74)
+instructionfont=pygame.font.Font('bag/bagasset/font.ttf',50)
 
 running=True
 while running:
