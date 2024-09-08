@@ -19,6 +19,7 @@ class Button:
             height = image.get_height()
             self.image = pygame.transform.scale(image, (int(width * scale), int(height * scale)))
             self.rect = self.image.get_rect(center=(self.x_pos, self.y_pos))
+            self.mask = pygame.mask.from_surface(self.image)  # Create a mask for the image
         else:
             # Text button
             self.image = None
@@ -41,7 +42,13 @@ class Button:
             # Image button
             pos = pygame.mouse.get_pos()
             if self.rect.collidepoint(pos):
-                self.image.set_alpha(128)  # Half opacity when hover on
+                # Check if the mouse is hovering over a non-transparent pixel
+                mouse_x = pos[0] - self.rect.left
+                mouse_y = pos[1] - self.rect.top
+                if self.mask.get_at((mouse_x, mouse_y)):
+                    self.image.set_alpha(128)  # Half opacity when hover on
+                else:
+                    self.image.set_alpha(255)  # Full opacity when not hovered
             else:
                 self.image.set_alpha(255)  # Full opacity when not hovered
             surface.blit(self.image, self.rect)
