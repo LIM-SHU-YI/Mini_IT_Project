@@ -34,6 +34,12 @@ dogdog_pic2 = pygame.transform.scale(dogdog_pic2, (dogdog_width, dogdog_height))
 current_dog_pic = dogdog_pic1
 obstacle_pic = pygame.image.load("running_race/obstacle_1.png")
 obstacle_pic = pygame.transform.scale(obstacle_pic, (obstacle_width, obstacle_height))
+win_pic = pygame.image.load("running_race/end_1.png")
+win_pic = pygame.transform.scale(win_pic, (WIDTH, HEIGHT))
+lose_pic1 = pygame.image.load("running_race/end_2.png")
+lose_pic1 = pygame.transform.scale(lose_pic1, (WIDTH, HEIGHT))
+lose_pic2 = pygame.image.load("running_race/end_3.png")
+lose_pic2 = pygame.transform.scale(lose_pic2, (WIDTH, HEIGHT))
 
 dogdog_mask = pygame.mask.from_surface(current_dog_pic)
 obstacle_mask = pygame.mask.from_surface(obstacle_pic)
@@ -136,11 +142,18 @@ while running:
 
 screen.blit(background_pic, (0, 0))
 if dogdog_win:
+    screen.blit(win_pic,(0, 0))
     endtxt = font.render("You Win!", True, GREEN)
-else:
-    endtxt = font.render("Game Over", True, BLACK)
+    screen.blit(endtxt, (WIDTH // 2 - 100, HEIGHT // 2))
 
-screen.blit(endtxt, (WIDTH // 2 - 100, HEIGHT // 2 - 50))
+else:
+    screen.blit(lose_pic1, (0, 0))
+    pygame.display.flip()
+    pygame.time.delay(1000)
+    screen.blit(lose_pic2, (0, 0))
+    endtxt = font.render("YOU LOSE!", True, RED)
+    screen.blit(endtxt, (WIDTH // 2 - 100, HEIGHT // 2))
+
 pygame.display.flip()
 
 # Keep the game window open until the user closes it
