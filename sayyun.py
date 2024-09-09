@@ -62,7 +62,7 @@ finishline = WIDTH - 100
 
 font = pygame.font.SysFont(None, 48)
 
-time_limit = 20  # 25 seconds to reach the finish line
+time_limit = 20  # 20 seconds to reach the finish line
 start_time = time.time()
 
 # Game loop

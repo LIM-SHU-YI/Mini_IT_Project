@@ -1,5 +1,6 @@
 import sys
 import pygame
+import time
 
 pygame.init()
 
@@ -50,6 +51,7 @@ mouse_press = False
 out_area = False 
 running = True
 
+
 while running:
     screen.blit(background, (0, 0))
     
@@ -77,7 +79,7 @@ while running:
                     out_area = False
                 
                 if out_area:
-                    if progress < 33:
+                    if progress < 50:
                         current_image_index = 4 
                     else:
                         current_image_index = 5  
@@ -99,7 +101,7 @@ while running:
                         
                             progress = (strokes / max_progress) * 100
                             
-                            if progress >= 33:
+                            if progress >= 50:
                                 if strokes % 2 == 1:
                                     current_image_index = 2 
                                 else:
