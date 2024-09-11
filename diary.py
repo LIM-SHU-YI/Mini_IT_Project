@@ -1,5 +1,6 @@
 import pygame
 <<<<<<< HEAD
+<<<<<<< HEAD
 import math
 
 pygame.init()
@@ -153,6 +154,8 @@ def main():
 if __name__ == "__main__":
     main()
 =======
+=======
+>>>>>>> f0c06078cd16aeb3a3fe194d958b30bff544bec5
 game_completed = False
 
 def diary():
@@ -258,4 +261,7 @@ def diary():
 #         if event.type == pygame.QUIT:
 #             running = False
 #             break
+<<<<<<< HEAD
+>>>>>>> f0c06078cd16aeb3a3fe194d958b30bff544bec5
+=======
 >>>>>>> f0c06078cd16aeb3a3fe194d958b30bff544bec5
