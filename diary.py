@@ -106,7 +106,7 @@ def erase(pencilpos,brushsize=30):
     if righterasablearea.collidepoint(pencilpos):
         pygame.draw.circle(erasablemask,(0, 0, 0, 0),(pencilpos[0]-backgroundrect.x,pencilpos[1]-backgroundrect.y),brushsize)
 
-def main():
+def diarymain():
     global scene,erasedarea,showmsg, showinstruction
     running=True
     pencilactive=False
@@ -150,4 +150,4 @@ def main():
     pygame.quit()
 
 if __name__ == "__main__":
-    main()
+    diarymain()
