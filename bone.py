@@ -197,10 +197,10 @@ def bone():
 
 
 # debug
-running=True
-while running:
-    bone()
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            running = False
-            break
+# running=True
+# while running:
+#     bone()
+#     for event in pygame.event.get():
+#         if event.type == pygame.QUIT:
+#             running = False
+#             break
