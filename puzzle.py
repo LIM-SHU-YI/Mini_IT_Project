@@ -46,7 +46,7 @@ def puzzle():
             self.init_puzzle()
 
         def init_puzzle(self):
-            image = pygame.image.load('gameasset/1.png')
+            image = pygame.image.load('kitasset/gameasset/1.png')
             scaledwidth = self.gridsize[0] * self.tilesize[0]
             scaledheight = self.gridsize[1] * self.tilesize[1]
             image = pygame.transform.scale(image, (scaledwidth, scaledheight))
@@ -136,7 +136,7 @@ def puzzle():
     program = puzzle(gridsize, tilesize, puzzlearea)
 
     # Load original image
-    originalimage = pygame.image.load('gameasset/1.png')
+    originalimage = pygame.image.load('kitasset/gameasset/1.png')
     originalimage = pygame.transform.scale(originalimage, (screenwidth - puzzlewidth, puzzleheight))
 
     # Main Game Loop
@@ -153,8 +153,8 @@ def puzzle():
     
 
     # font
-    large=pygame.font.Font ('gameasset/font.ttf',60)
-    small=pygame.font.Font ('gameasset/font.ttf',40)
+    large=pygame.font.Font ('kitasset/gameasset/font.ttf',60)
+    small=pygame.font.Font ('kitasset/gameasset/font.ttf',40)
 
     while running:
         currenttime=pygame.time.get_ticks()

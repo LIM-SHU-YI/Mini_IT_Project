@@ -14,11 +14,11 @@ def bag():
     Black=(0,0,0)
     White=(255,255,255)
 
-    background=pygame.image.load('bagasset/5.png')
-    bag=pygame.image.load('bagasset/1.png')
-    item1=pygame.image.load('bagasset/2.png')
-    item2=pygame.image.load('bagasset/3.png')
-    item3=pygame.image.load('bagasset/4.png')
+    background=pygame.image.load('kitasset/bagasset/5.png')
+    bag=pygame.image.load('kitasset/bagasset/1.png')
+    item1=pygame.image.load('kitasset/bagasset/2.png')
+    item2=pygame.image.load('kitasset/bagasset/3.png')
+    item3=pygame.image.load('kitasset/bagasset/4.png')
 
     bag=pygame.transform.scale(bag,(450,300))
     item1=pygame.transform.scale(item1,(200,200))
@@ -52,8 +52,8 @@ def bag():
 
     itemdragged=None
 
-    font=pygame.font.Font('bagasset/font.ttf',74)
-    instructionfont=pygame.font.Font('bagasset/font.ttf',50)
+    font=pygame.font.Font('kitasset/bagasset/font.ttf',74)
+    instructionfont=pygame.font.Font('kitasset/bagasset/font.ttf',50)
 
     running=True
     while running:
