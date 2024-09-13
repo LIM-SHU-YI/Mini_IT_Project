@@ -13,8 +13,8 @@ pygame.display.set_caption("Drag and click the clock hand")
 WHITE = (255, 255, 255)
 
 # Clock Size and Position
-POSITION = (WIDTH // 2, HEIGHT * 3 // 4)  # Moved down
 SIZE = 150
+POSITION = (WIDTH // 2, HEIGHT * 3 // 4)
 
 # Hand's Initial Position
 hour_angle = 0
@@ -30,16 +30,32 @@ font = pygame.font.Font(None, 24)
 message_font = pygame.font.Font(None, 36)
 
 # Load background images
-background = pygame.image.load("Photo used/Clock/dog die.png")  # Make sure to have this image in your directory
+background = pygame.image.load("Photo used/Clock/dog die.png")
 background = pygame.transform.scale(background, (WIDTH, HEIGHT))
-next_scene = pygame.image.load("Photo used/Clock/first met.png")  # Make sure to have this image in your directory
+next_scene = pygame.image.load("Photo used/Clock/first met.png")
 next_scene = pygame.transform.scale(next_scene, (WIDTH, HEIGHT))
 
 current_background = background
 
-# Draw clock
-def clock(hour_angle, minute_angle):
-    screen.blit(current_background, (0, 0))
+# Zoom parameters
+MAX_ZOOM = 1.5  # Maximum zoom factor
+zoom_factor = 1.0
+
+# Draw clock and zoomed background
+def draw_scene(hour_angle, minute_angle):
+    # Calculate the zoomed background size
+    zoomed_width = int(WIDTH * zoom_factor)
+    zoomed_height = int(HEIGHT * zoom_factor)
+    
+    # Create a zoomed surface
+    zoomed_background = pygame.transform.scale(current_background, (zoomed_width, zoomed_height))
+    
+    # Calculate the position to blit the zoomed background
+    x_offset = (zoomed_width - WIDTH) // 2
+    y_offset = (zoomed_height - HEIGHT) // 2
+    
+    # Blit the zoomed background
+    screen.blit(zoomed_background, (-x_offset, -y_offset))
 
     # Draw clock circle
     pygame.draw.circle(screen, WHITE, POSITION, SIZE, 2)
@@ -115,13 +131,17 @@ while run:
             anticlockwise_rotations += abs(delta_minutes) / 60
             if anticlockwise_rotations >= 12:
                 hour_rotations = anticlockwise_rotations / 12
+            
+            # Update zoom factor
+            zoom_factor = min(1 + (anticlockwise_rotations / 24), MAX_ZOOM)
 
         # Check if rotation conditions are met
         if check_rotation_conditions():
             current_background = next_scene
+            zoom_factor=1.0
             game_over = True
 
-    clock(hour_angle, minute_angle)
+    draw_scene(hour_angle, minute_angle)
 
     # Display clockwise rotation message
     if clockwise_rotation_started and clockwise_message:
