@@ -47,9 +47,9 @@ def bone():
 
 
     hitcircle=[]
-    spawninterval=2000
+    spawninterval=700
     lastspawntime=starttime
-    shrinkduration=2000
+    shrinkduration=700
 
     score=0
 
@@ -62,7 +62,7 @@ def bone():
         buttonrect = pygame.Rect(buttonx, buttony, *buttonsize)
         buttoncenter = buttonrect.center
         radius = max(buttonsize)
-        detectradius = radius // 2
+        detectradius = radius
         hitcircle.append({
             'rect': buttonrect,
             'center': buttoncenter,
@@ -135,6 +135,7 @@ def bone():
                         buttonrect=button.get_rect(center=circle['center'])
                         screen.blit(button,buttonrect.topleft)
 
+
             (clicksha, clicksha_rect), (click, click_rect) = common.text_with_shadow("Click the circles in time!", common.cutedisplay(50), "Black", "White", (640, 50), shadow_offset=(4, 5))
             screen.blit(clicksha, clicksha_rect)
             screen.blit(click, click_rect)
@@ -196,10 +197,10 @@ def bone():
 
 
 # debug
-# running=True
-# while running:
-#     bone()
-#     for event in pygame.event.get():
-#         if event.type == pygame.QUIT:
-#             running = False
-#             break
+running=True
+while running:
+    bone()
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            running = False
+            break
