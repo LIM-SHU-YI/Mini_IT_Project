@@ -14,8 +14,11 @@ images = [
     pygame.transform.scale(pygame.image.load("love button/dog_ii.png"), (688, 680)), 
     pygame.transform.scale(pygame.image.load("love button/dog_iii.png"), (536, 625)), 
     pygame.transform.scale(pygame.image.load("love button/dog_iv.png"), (619, 623)),
+    pygame.transform.scale(pygame.image.load("love button/dog_v.png"), (660, 498)), 
+    pygame.transform.scale(pygame.image.load("love button/dog_vi.png"), (581, 497)),
     pygame.transform.scale(pygame.image.load("love button/dog_1.png"), (691, 641)), 
-    pygame.transform.scale(pygame.image.load("love button/dog_2.png"), (438, 672))
+    pygame.transform.scale(pygame.image.load("love button/dog_2.png"), (438, 672)),
+    pygame.transform.scale(pygame.image.load("love button/dog_3.png"), (586, 494))
 ]
 
 current_image_index = 0
@@ -25,8 +28,11 @@ image_positions = [
     ((1280 - 688) // 2, (720 - 730) // 2), 
     ((1280 - 536) // 2, (720 - 625) // 2), 
     ((1280 - 710) // 2, (720 - 623) // 2),
+    ((1280 - 700) // 2, (720 - 533) // 2), 
+    ((1280 - 550) // 2, (720 - 533) // 2),
     ((1280 - 725) // 2, (720 - 645) // 2), 
-    ((1280 - 285) // 2, (720 - 647) // 2)
+    ((1280 - 285) // 2, (720 - 647) // 2),
+    ((1280 -548) // 2, (720 - 533) // 2)
 ]
 
 masks = [pygame.mask.from_surface(image) for image in images]
@@ -40,9 +46,9 @@ bar_y = 50
 
 heart_image = pygame.transform.scale(pygame.image.load("love button/heart.png"), (30, 30))
 
-
 stomach_area = pygame.Rect(610, 180, 280, 200)
 head_area = pygame.Rect(630, 65, 190, 80)
+tail_area = pygame.Rect(330, 160, 180, 170)
 
 last_mouse_x = None
 direction = None
@@ -68,53 +74,54 @@ while running:
         # Mouse movement detection
         if event.type == pygame.MOUSEMOTION:
             mouse_x, mouse_y = event.pos
-            
+
+           # Determine current interaction area based on progress
+            if progress < 33:
+                interaction_area = stomach_area
+            elif progress < 66:
+                interaction_area = head_area
+            else:
+                interaction_area = tail_area
+
             # Check if the mouse is within the interaction area
-            mouse_in_interaction_area = stomach_area.collidepoint(mouse_x, mouse_y)
-            
+            mouse_in_interaction_area = interaction_area.collidepoint(mouse_x, mouse_y)   
+
             if mouse_press:
                 if not mouse_in_interaction_area:
                     out_area = True
                 else:
                     out_area = False
                 
-                if out_area:
-                    if progress < 50:
-                        current_image_index = 4 
+                # Determine which image to show based on progress
+                if progress < 33:
+                    if out_area:
+                        current_image_index = 6  # Show dog_1
                     else:
-                        current_image_index = 5  
+                        current_image_index = 0 if strokes % 2 == 0 else 1
+                elif progress < 66:
+                    if out_area:
+                        current_image_index = 7  # Show dog_2
+                    else:
+                        current_image_index = 2 if strokes % 2 == 0 else 3
                 else:
-                    local_mouse_x = mouse_x - image_positions[current_image_index][0]
-                    local_mouse_y = mouse_y - image_positions[current_image_index][1]
-                    
-                    if 0 <= local_mouse_x < images[current_image_index].get_width() and \
-                       0 <= local_mouse_y < images[current_image_index].get_height() and \
-                       masks[current_image_index].get_at((local_mouse_x, local_mouse_y)):
-                        
-                        if last_mouse_x is not None:
-                            if mouse_x > last_mouse_x and direction != "right":
-                                direction = "right"
-                                strokes += 1
-                            elif mouse_x < last_mouse_x and direction != "left":
-                                direction = "left"
-                                strokes += 1
-                        
-                            progress = (strokes / max_progress) * 100
-                            
-                            if progress >= 50:
-                                if strokes % 2 == 1:
-                                    current_image_index = 2 
-                                else:
-                                    current_image_index = 3  
-                                    stomach_area = head_area
-                            else:
-                                if strokes % 2 == 1:
-                                    current_image_index = 0  
-                                else:
-                                    current_image_index = 1  
-                                    stomach_area = pygame.Rect(610, 180, 280, 200)
+                    if out_area:
+                        current_image_index = 8  # Show dog_3
+                    else:
+                        current_image_index = 4 if strokes % 2 == 0 else 5
 
-                        last_mouse_x = mouse_x
+                # Stroke detection and progress update            
+                
+                if mouse_in_interaction_area and last_mouse_x is not None:
+                    if mouse_x > last_mouse_x and direction != "right":
+                        direction = "right"
+                        strokes += 1
+                    elif mouse_x < last_mouse_x and direction != "left":
+                        direction = "left"
+                        strokes += 1
+                
+                progress = (strokes / max_progress) * 100
+
+                last_mouse_x = mouse_x
             else:
                 last_mouse_x = None
                 direction = None
@@ -133,7 +140,7 @@ while running:
         screen.blit(heart_image, (bar_x + 10 + i * 30, bar_y + 5))
 
     # Interaction area
-    pygame.draw.rect(screen, (120, 0, 0, 80), stomach_area, 2)
+    pygame.draw.rect(screen, (120, 0, 0, 80), interaction_area, 2)
     
     pygame.display.flip()
 
