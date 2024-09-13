@@ -18,12 +18,12 @@ def bone():
     black=(0,0,0)
     grey=(64,64,64)
 
-    image=["boneimg/1.png", "boneimg/2.png", "boneimg/3.png"]
+    image=["kitasset/boneimg/1.png", "kitasset/boneimg/2.png", "kitasset/boneimg/3.png"]
     scenes=[pygame.image.load(image).convert()for image in image]
     currentscene=0
     scenes=[pygame.transform.scale(scene,(width,height))for scene in scenes]
 
-    buttonimg="boneimg/4.png"
+    buttonimg="kitasset/boneimg/4.png"
     buttonsize=(120,120)
     button=pygame.image.load(buttonimg).convert_alpha()
     button=pygame.transform.scale(button,buttonsize)
@@ -34,7 +34,7 @@ def bone():
     wingame = False            #added to check game win or no
 
 
-    fontttf="boneimg/font.ttf"
+    fontttf="kitasset/boneimg/font.ttf"
     fontsize=72
     font=pygame.font.Font(fontttf,fontsize)
 
