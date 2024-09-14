@@ -1,153 +1,166 @@
 import pygame
 import math
+import common
 
-# Initialize pygame
 pygame.init()
 
-# Game window
-WIDTH, HEIGHT = 1280, 720
-screen = pygame.display.set_mode((WIDTH, HEIGHT))
-pygame.display.set_caption("Drag and click the clock hand")
 
-# Colors
-WHITE = (255, 255, 255)
+SCREEN_WIDTH = 1280
+SCREEN_HEIGHT = 720
+screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+icon = pygame.image.load("asset/image/gameicon.png")
+pygame.display.set_caption("Memories")
+pygame.display.set_icon(icon)
 
-# Clock Size and Position
-SIZE = 150
-POSITION = (WIDTH // 2, HEIGHT * 3 // 4)
+background = pygame.image.load("Photo used/Clock/dog die.png")
+background = pygame.transform.scale(background, (SCREEN_WIDTH, SCREEN_HEIGHT))
+dog_old = pygame.image.load("Photo used/Clock/dog old.png")
+dog_old = pygame.transform.scale(dog_old, (SCREEN_WIDTH, SCREEN_HEIGHT))
+first_met = pygame.image.load("Photo used/Clock/first met.png")
+first_met = pygame.transform.scale(first_met, (SCREEN_WIDTH, SCREEN_HEIGHT))
 
-# Hand's Initial Position
+# Clock parameters
+CENTER = (SCREEN_WIDTH // 2, SCREEN_HEIGHT * 3 // 4)
+RADIUS = 150
 hour_angle = 0
 minute_angle = 0
 
-# Track dragged hand and rotations
-drag_min = False
-anticlockwise_rotations = 0
-hour_rotations = 0
-
-# Font for clock numbers and messages
-font = pygame.font.Font(None, 24)
-message_font = pygame.font.Font(None, 36)
-
-# Load background images
-background = pygame.image.load("Photo used/Clock/dog die.png")
-background = pygame.transform.scale(background, (WIDTH, HEIGHT))
-next_scene = pygame.image.load("Photo used/Clock/first met.png")
-next_scene = pygame.transform.scale(next_scene, (WIDTH, HEIGHT))
-
+# Game state
+clock_stopped = False
 current_background = background
-
-# Zoom parameters
-MAX_ZOOM = 1.5  # Maximum zoom factor
 zoom_factor = 1.0
+message = ""
+show_message = False
+message_timer = 0
 
-# Draw clock and zoomed background
-def draw_scene(hour_angle, minute_angle):
-    # Calculate the zoomed background size
-    zoomed_width = int(WIDTH * zoom_factor)
-    zoomed_height = int(HEIGHT * zoom_factor)
+# Font 
+font = common.arcade(36)
+
+# Get bg colour of initial photo
+bg_colour = background.get_at((0, 0))
+
+def draw_scene(surface, hour_angle, minute_angle, zoom_factor, draw_clock=True):
+    surface.fill(bg_colour)
     
-    # Create a zoomed surface
+    # Draw the zoom 
+    zoomed_width = int(SCREEN_WIDTH * zoom_factor)
+    zoomed_height = int(SCREEN_HEIGHT * zoom_factor)
+    
     zoomed_background = pygame.transform.scale(current_background, (zoomed_width, zoomed_height))
     
-    # Calculate the position to blit the zoomed background
-    x_offset = (zoomed_width - WIDTH) // 2
-    y_offset = (zoomed_height - HEIGHT) // 2
+    #Position blit zoom
+    x_offset = (zoomed_width - SCREEN_WIDTH) // 2
+    y_offset = (zoomed_height - SCREEN_HEIGHT) // 2
     
-    # Blit the zoomed background
-    screen.blit(zoomed_background, (-x_offset, -y_offset))
+    surface.blit(zoomed_background, (-x_offset, -y_offset))
 
-    # Draw clock circle
-    pygame.draw.circle(screen, WHITE, POSITION, SIZE, 2)
+    #Draw the clock
+    if draw_clock:
+        pygame.draw.circle(surface, (255, 255, 255), CENTER, RADIUS, 2)
 
-    # Draw clock numbers
-    for i in range(1, 13):
-        angle = math.radians(i * 30 - 90)  # -90 to start at 12 o'clock
-        x = POSITION[0] + int((SIZE - 20) * math.cos(angle))
-        y = POSITION[1] + int((SIZE - 20) * math.sin(angle))
-        number = font.render(str(i), True, WHITE)
-        number_rect = number.get_rect(center=(x, y))
-        screen.blit(number, number_rect)
+        for i in range(1, 13):
+            angle = math.radians(i * 30 - 90)
+            x = CENTER[0] + int((RADIUS - 20) * math.cos(angle))
+            y = CENTER[1] + int((RADIUS - 20) * math.sin(angle))
+            number = font.render(str(i), True, (255, 255, 255))
+            number_rect = number.get_rect(center=(x, y))
+            surface.blit(number, number_rect)
 
-    # Hour hand position
-    hour_x = POSITION[0] + int(SIZE * 0.5 * math.sin(hour_angle))
-    hour_y = POSITION[1] - int(SIZE * 0.5 * math.cos(hour_angle))
-    pygame.draw.line(screen, WHITE, POSITION, (hour_x, hour_y), 4)
+        hour_x = CENTER[0] + int(RADIUS * 0.5 * math.sin(hour_angle))
+        hour_y = CENTER[1] - int(RADIUS * 0.5 * math.cos(hour_angle))
+        pygame.draw.line(surface, (255, 255, 255), CENTER, (hour_x, hour_y), 4)
 
-    # Minute hand position
-    minute_x = POSITION[0] + int(SIZE * 0.7 * math.sin(minute_angle))
-    minute_y = POSITION[1] - int(SIZE * 0.7 * math.cos(minute_angle))
-    pygame.draw.line(screen, WHITE, POSITION, (minute_x, minute_y), 2)
+        minute_x = CENTER[0] + int(RADIUS * 0.7 * math.sin(minute_angle))
+        minute_y = CENTER[1] - int(RADIUS * 0.7 * math.cos(minute_angle))
+        pygame.draw.line(surface, (255, 255, 255), CENTER, (minute_x, minute_y), 2)
 
-# Check rotation conditions
-def check_rotation_conditions():
-    global anticlockwise_rotations, hour_angle, minute_angle
-    if anticlockwise_rotations >= 12 and abs(hour_angle) % (2 * math.pi) < 0.1 and (minute_angle % (2 * math.pi)) < 0.1:
-        return True
-    return False
+def check_hour_hand_position(cumulative_angle):
+    full_rotations = abs(cumulative_angle) // (2 * math.pi)
+    if full_rotations >= 1:
+        if cumulative_angle > 0:
+            return "clockwise"
+        else:
+            return "anticlockwise"
+    return None
 
-# Click and Drag
-run = True
-clockwise_message = ""
-clockwise_rotation_started = False
-game_over = False
+running = True
+drag_min = False
+last_angle = 0
+cumulative_angle = 0
+initial_zoom = 1.0
 
-while run:
+while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
-            run = False
-
-        elif event.type == pygame.MOUSEBUTTONDOWN:
+            running = False
+        elif event.type == pygame.MOUSEBUTTONDOWN and not clock_stopped:
             mouse_x, mouse_y = pygame.mouse.get_pos()
-            
-            minute_x = POSITION[0] + int(SIZE * 0.7 * math.sin(minute_angle))
-            minute_y = POSITION[1] - int(SIZE * 0.7 * math.cos(minute_angle))
-            if math.sqrt((mouse_x-minute_x)**2 + (mouse_y - minute_y)**2) < 15 and not game_over:
+            minute_x = CENTER[0] + int(RADIUS * 0.7 * math.sin(minute_angle))
+            minute_y = CENTER[1] - int(RADIUS * 0.7 * math.cos(minute_angle))
+            if math.sqrt((mouse_x-minute_x)**2 + (mouse_y-minute_y)**2) < 15:
                 drag_min = True
-                clockwise_rotation_started = False
-
+                last_angle = minute_angle
+                initial_zoom = zoom_factor
         elif event.type == pygame.MOUSEBUTTONUP:
             drag_min = False
 
-    if drag_min and not game_over:
+    if drag_min and not clock_stopped:
         mouse_x, mouse_y = pygame.mouse.get_pos()
-        angle = math.atan2(mouse_x - POSITION[0], -(mouse_y - POSITION[1]))
-
-        old_minute_angle = minute_angle
-        minute_angle = angle
-        # Calculate the change in minutes
-        delta_minutes = ((minute_angle - old_minute_angle) / (2 * math.pi)) * 60
-        if delta_minutes < -30:  # Crossed 12 o'clock clockwise
-            delta_minutes += 60
-        elif delta_minutes > 30:  # Crossed 12 o'clock counterclockwise
-            delta_minutes -= 60
+        new_angle = math.atan2(mouse_x - CENTER[0], -(mouse_y - CENTER[1]))
         
-        # Update hour angle based on change in minutes
-        hour_angle += (delta_minutes / 60) * (math.pi / 6)
-        hour_angle %= 2 * math.pi
+        delta_angle = new_angle - last_angle
+        if delta_angle > math.pi:
+            delta_angle -= 2 * math.pi
+        elif delta_angle < -math.pi:
+            delta_angle += 2 * math.pi
+        
+        minute_angle = new_angle
+        hour_angle += delta_angle / 12
+        cumulative_angle += delta_angle / 12
+        last_angle = new_angle
+        
+        # Update zoom based on direction
+        # Clockwise
+        if cumulative_angle > 0:  
+            target_zoom = max(initial_zoom - (cumulative_angle / (2 * math.pi) * 0.25), 0.75)
+        # Anticlockwise
+        else:
+            target_zoom = min(initial_zoom + (abs(cumulative_angle) / (2 * math.pi) * 0.5), 1.5)
+        
+        zoom_factor += (target_zoom - zoom_factor) * 0.1  # Smoother transition
+        
+        rotation_result = check_hour_hand_position(cumulative_angle)
+        if rotation_result == "clockwise":
+            message = "The dog did not become younger and it die soon"
+            show_message = True
+            message_timer = pygame.time.get_ticks()
+        elif rotation_result == "anticlockwise":
+            message = "The dog back to the day it met its owner"
+            show_message = True
+            message_timer = pygame.time.get_ticks()
 
-        # Check for anticlockwise rotation
-        if delta_minutes < 0:
-            anticlockwise_rotations += abs(delta_minutes) / 60
-            if anticlockwise_rotations >= 12:
-                hour_rotations = anticlockwise_rotations / 12
-            
-            # Update zoom factor
-            zoom_factor = min(1 + (anticlockwise_rotations / 24), MAX_ZOOM)
-
-        # Check if rotation conditions are met
-        if check_rotation_conditions():
-            current_background = next_scene
-            zoom_factor=1.0
-            game_over = True
-
-    draw_scene(hour_angle, minute_angle)
-
-    # Display clockwise rotation message
-    if clockwise_rotation_started and clockwise_message:
-        message_surface = message_font.render(clockwise_message, True, WHITE)
-        message_rect = message_surface.get_rect(center=(WIDTH // 2, HEIGHT // 4))
+    screen.fill((0, 0, 0))  # Fill with black
+    
+    if show_message:
+        screen.fill((0, 0, 0))
+        message_surface = font.render(message, True, (255, 255, 255))
+        message_rect = message_surface.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2))
         screen.blit(message_surface, message_rect)
+        
+        
+        if pygame.time.get_ticks() - message_timer > 2000:
+            show_message = False
+            if message == "The dog did not become younger and it die soon":
+                current_background = dog_old
+            elif message == "The dog back to the day it met its owner":
+                current_background = first_met
+            clock_stopped = True
+            zoom_factor = 1.0
+            hour_angle = 0
+            minute_angle = 0
+            cumulative_angle = 0
+    else:
+        draw_scene(screen, hour_angle, minute_angle, zoom_factor, not clock_stopped)
 
     pygame.display.flip()
 
