@@ -57,6 +57,7 @@ mouse_press = False
 out_area = False 
 running = True
 
+font = pygame.font.Font(None, 36) 
 
 while running:
     screen.blit(background, (0, 0))
@@ -71,17 +72,18 @@ while running:
         if event.type == pygame.MOUSEBUTTONUP:
             mouse_press = False  
 
-        # Mouse movement detection
         if event.type == pygame.MOUSEMOTION:
             mouse_x, mouse_y = event.pos
 
-           # Determine current interaction area based on progress
             if progress < 33:
                 interaction_area = stomach_area
+                instruction_text = "Stroke the dog's stomach \(•ω•`)o"
             elif progress < 66:
                 interaction_area = head_area
+                instruction_text = "Stroke the dog's head (/>U<)/"
             else:
                 interaction_area = tail_area
+                instruction_text = "Stroke the dog's tail \^o^/"
 
             # Check if the mouse is within the interaction area
             mouse_in_interaction_area = interaction_area.collidepoint(mouse_x, mouse_y)   
@@ -92,24 +94,21 @@ while running:
                 else:
                     out_area = False
                 
-                # Determine which image to show based on progress
                 if progress < 33:
                     if out_area:
-                        current_image_index = 6  # Show dog_1
+                        current_image_index = 6
                     else:
                         current_image_index = 0 if strokes % 2 == 0 else 1
                 elif progress < 66:
                     if out_area:
-                        current_image_index = 7  # Show dog_2
+                        current_image_index = 7  
                     else:
                         current_image_index = 2 if strokes % 2 == 0 else 3
                 else:
                     if out_area:
-                        current_image_index = 8  # Show dog_3
+                        current_image_index = 8 
                     else:
-                        current_image_index = 4 if strokes % 2 == 0 else 5
-
-                # Stroke detection and progress update            
+                        current_image_index = 4 if strokes % 2 == 0 else 5      
                 
                 if mouse_in_interaction_area and last_mouse_x is not None:
                     if mouse_x > last_mouse_x and direction != "right":
@@ -132,15 +131,15 @@ while running:
     screen.blit(images[current_image_index], image_positions[current_image_index])
 
     # Progress bar
-    pygame.draw.rect(screen, (0, 0, 0), (65, 45, 310, 50), 2) 
-    pygame.draw.rect(screen, (0, 255, 0), (bar_x, bar_y, (progress / 100) * bar_width, bar_height)) 
+    pygame.draw.rect(screen, (198, 184, 219), (65, 45, 310, 50), 2) 
+    pygame.draw.rect(screen, (204, 255, 255), (bar_x, bar_y, (progress / 100) * bar_width, bar_height)) 
 
     heart_count = int(progress / 10) 
     for i in range(heart_count):
         screen.blit(heart_image, (bar_x + 10 + i * 30, bar_y + 5))
 
-    # Interaction area
-    pygame.draw.rect(screen, (120, 0, 0, 80), interaction_area, 2)
+    text_surface = font.render(instruction_text, True, (153, 153, 255)) 
+    screen.blit(text_surface, (40, 670)) 
     
     pygame.display.flip()
 

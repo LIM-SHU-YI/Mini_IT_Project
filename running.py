@@ -10,9 +10,10 @@ screen = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Running Race Mini-Game")
 
 WHITE = (255, 255, 255)
-BLACK = (0, 0, 0)
+BROWN = (140, 107, 88)
 RED = (255, 0, 0)
 GREEN = (0, 255, 0)
+BLACK = (0, 0, 0)
 
 dogdog_width, dogdog_height = 90, 80
 dogdog_x, dogdog_y = 50, HEIGHT - dogdog_height - 20
@@ -64,13 +65,14 @@ font = pygame.font.SysFont(None, 48)
 time_limit = 20  
 start_time = time.time()
 
+lives = 2
 running = True
 dogdog_win = False
 
 # Animation toggle
 frame_toggle = True
 
-while running:
+while running and lives > 0:
     screen.blit(background_pic, (0, 0))
 
     time_left = time_limit - (time.time() - start_time)
@@ -120,16 +122,22 @@ while running:
         # Check for pixel-perfect collision
         offset = (obstacle_rect.x - dogdog_rect.x, obstacle_rect.y - dogdog_rect.y)
         if dogdog_mask.overlap(obstacle_mask, offset):
-            running = False
+            lives -= 1 
+            dogdog_x, dogdog_y = 50, HEIGHT - dogdog_height - 20 
+            obstacles.clear() 
+            last_x = WIDTH
+            for _ in range(15):
+                last_x += random.randint(obstacle_spacing, obstacle_spacing * 2)
+                obstacles.append(create_obstacle(last_x))
+            start_time = time.time()
 
 
     pygame.draw.line(screen, BLACK, (finishline, 0), (finishline, HEIGHT), 5)
 
-    timer_text = font.render(f"Time Left: {int(time_left)}s", True, BLACK)
+    timer_text = font.render(f"Time Left: {int(time_left)}s", True, BROWN)
+    lives_text = font.render(f"Lives: {lives}", True, BROWN)
     screen.blit(timer_text, (10, 10))
-
-    if any(obstacle.colliderect(dogdog_rect) for obstacle in obstacles):
-        running = False
+    screen.blit(lives_text, (10, 50))
 
     if dogdog_x + dogdog_width >= finishline:
         dogdog_win = True
