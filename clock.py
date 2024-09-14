@@ -31,8 +31,7 @@ zoom_factor = 1.0
 message = ""
 show_message = False
 message_timer = 0
-
-# Font 
+ 
 font = common.arcade(36)
 
 # Get bg colour of initial photo
@@ -165,7 +164,6 @@ def clock_main_loop():
 
         pygame.display.flip()
 
+if __name__ == "__main__":
+    clock_main_loop()
     pygame.quit()
-
-
-clock_main_loop()

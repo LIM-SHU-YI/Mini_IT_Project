@@ -4,11 +4,9 @@ import os
 from button import Button
 from common import text_with_shadow, normal_text, cutedisplay
 
-# Initialize Pygame
 pygame.init()
-pygame.mixer.init()
 
-# Set up the display
+
 SCREEN_WIDTH = 1280
 SCREEN_HEIGHT = 720
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
@@ -16,7 +14,7 @@ icon = pygame.image.load("asset/image/gameicon.png")
 pygame.display.set_caption("Memories")
 pygame.display.set_icon(icon)
 
-# Load images
+
 background = pygame.image.load("Photo used/Button/gamebackground.png")
 hug_img = pygame.image.load("Photo used/Button/Hug.png")
 angry_img = pygame.image.load("Photo used/Button/Angry.png")
@@ -26,7 +24,7 @@ me_img = pygame.image.load("Photo used/Button/Me.png")
 dad_img = pygame.image.load("Photo used/Button/Dad.png")
 replay_img = pygame.image.load("Photo used/Button/replay.png")
 
-# Create buttons
+
 buttons = {
     "Hug": Button(387, 560, image=hug_img, visible=False),
     "Angry": Button(643, 563, image=angry_img, visible=False),
@@ -37,9 +35,9 @@ buttons = {
     
 }
 
-replay_button = Button(640, 190, image=replay_img, visible=True)
+replay_button = Button(580, 180, image=replay_img, visible=True)
 
-# Game variables
+
 words = ["Hug", "Angry", "Food", "Play", "Me", "Dad", "Hug Me", "Me Angry", "Dad Play", "Dad Food"]
 current_word = ""
 correct_answers = 0
@@ -51,7 +49,7 @@ replay_count = 3
 audio_playing = False
 buttons_visible = False
 
-# Load audio files
+
 audio_files = {word: pygame.mixer.Sound(f"Audio Used/{word.replace(' ', '_').lower()}.wav") for word in words}
 
 def display_result(result):
@@ -124,9 +122,9 @@ def draw_game():
             if button.visible:
                 button.update(screen)
         
-        # Always draw the replay button
+        #Continue draw the replay button
         replay_button.update(screen)
-        replay_text = normal_text(f"x{replay_count}", cutedisplay(100), (0, 0, 0), (870,180))
+        replay_text = normal_text(f"x{replay_count}", cutedisplay(80), (0, 0, 0), (730,180))
         screen.blit(*replay_text)
     else:
         screen.fill((255, 255, 255))
@@ -138,10 +136,9 @@ def draw_game():
         game_over_text = normal_text(message, cutedisplay(40), (0, 0, 0), (SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2))
         screen.blit(*game_over_text)
 
-def main_game_loop():
+def doglearning_main_game_loop():
     global running, replay_count, buttons_visible, audio_playing
     
-    # Start with a question
     new_question()
     
     running = True
@@ -176,7 +173,8 @@ def main_game_loop():
         draw_game()
         pygame.display.flip()
         clock.tick(60)
-
-if __name__ == "__main__":
-    main_game_loop()
+    
     pygame.quit()
+
+
+doglearning_main_game_loop()
