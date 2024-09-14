@@ -164,6 +164,7 @@ def clock_main_loop():
 
         pygame.display.flip()
 
-if __name__ == "__main__":
-    clock_main_loop()
     pygame.quit()
+
+
+clock_main_loop()
