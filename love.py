@@ -147,7 +147,15 @@ def love_interaction():
         
         pygame.display.flip()
 
-        
+    screen.fill((0, 0, 0)) 
+    message_font = pygame.font.Font(None, 54) 
+    message_text = message_font.render("You have shower your dog with boundless care, making it blissful.", True, (255, 255, 255))  
+    message_rect = message_text.get_rect(center=(1280 // 2, 720 // 2))  
+    screen.blit(message_text, message_rect)
+    pygame.display.flip()
+
+    time.sleep(3)
+
 
     waiting = True
     while waiting:
