@@ -1,6 +1,6 @@
 import pygame
 import common
-from diary import diary
+from clock import clock_main_loop
 
 
 # settings for the window of the game
@@ -82,15 +82,14 @@ def first_scene():
             pygame.time.wait(100)
 
         if index == 2:  #dic start from 0
-            diary()  # Call minigame here
+            clock_main_loop()  # Call minigame here
             # The code will return here after the minigame finishes
             if not common.running:
                 break
 
     if common.running:
-        common.current_scene = "second_a"
-        from part2 import second_a
-        second_a()
+        from love import love_interaction
+        love_interaction()
 
     pygame.quit()
 

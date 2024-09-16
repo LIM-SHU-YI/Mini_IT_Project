@@ -64,9 +64,9 @@ def credits(event):
 
 
 # # fast testrun
-common.running = True
-while common.running:
-    for event in pygame.event.get():
-        credits(event)
+# common.running = True
+# while common.running:
+#     for event in pygame.event.get():
+#         credits(event)
 
-pygame.quit()
+# pygame.quit()

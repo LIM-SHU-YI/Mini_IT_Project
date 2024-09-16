@@ -1,6 +1,7 @@
 import pygame
 import math
 import common
+from button import Button
 
 pygame.init()
 
@@ -17,6 +18,8 @@ dog_old = pygame.image.load("Photo used/Clock/dog old.png")
 dog_old = pygame.transform.scale(dog_old, (SCREEN_WIDTH, SCREEN_HEIGHT))
 first_met = pygame.image.load("Photo used/Clock/first met.png")
 first_met = pygame.transform.scale(first_met, (SCREEN_WIDTH, SCREEN_HEIGHT))
+clockbg = pygame.image.load("Photo used/Clock/clocks.png")
+clockbg = pygame.transform.scale(clockbg, (SCREEN_WIDTH, SCREEN_HEIGHT))
 
 # Clock parameters
 CENTER = (SCREEN_WIDTH // 2, SCREEN_HEIGHT * 3 // 4)
@@ -33,6 +36,17 @@ show_message = False
 message_timer = 0
  
 font = common.arcade(36)
+return_img = pygame.image.load("asset/image/return.png")
+return_button = Button(50, 50, image=return_img, scale=0.27)
+game_completed = False
+
+def updatem():
+    if common.music_button.visible:
+        common.music_button.update(screen)
+    if common.mute_button.visible:
+        common.mute_button.update(screen)
+
+    pygame.display.flip()
 
 # Get bg colour of initial photo
 bg_colour = background.get_at((0, 0))
@@ -71,6 +85,8 @@ def draw_scene(surface, hour_angle, minute_angle, zoom_factor, draw_clock=True):
         minute_x = CENTER[0] + int(RADIUS * 0.7 * math.sin(minute_angle))
         minute_y = CENTER[1] - int(RADIUS * 0.7 * math.cos(minute_angle))
         pygame.draw.line(surface, (255, 255, 255), CENTER, (minute_x, minute_y), 2)
+        updatem()
+        pygame.display.flip()
 
 def check_hour_hand_position(cumulative_angle):
     full_rotations = abs(cumulative_angle) // (2 * math.pi)
@@ -82,19 +98,33 @@ def check_hour_hand_position(cumulative_angle):
     return None
 
 def clock_main_loop():
-    global hour_angle, minute_angle, clock_stopped, current_background, zoom_factor, message, show_message, message_timer
+    global hour_angle, minute_angle, clock_stopped, current_background, zoom_factor, message, show_message, message_timer, game_completed
 
     drag_min = False
     last_angle = 0
     cumulative_angle = 0
     initial_zoom = 1.0
 
+    game_is_done = False
+    fade = False
+
     running = True
     while running:
+        if not fade:
+            common.fade_in(screen, clockbg, duration=1000)
+            fade = True
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
-            elif event.type == pygame.MOUSEBUTTONDOWN and not clock_stopped:
+
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if common.music_button.visible and common.music_button.checkforinput(pygame.mouse.get_pos()):
+                    common.click.play()
+                    common.music_on_off()
+                elif common.mute_button.visible and common.mute_button.checkforinput(pygame.mouse.get_pos()):
+                    common.click.play()
+                    common.music_on_off()
+            if event.type == pygame.MOUSEBUTTONDOWN and not clock_stopped:
                 mouse_x, mouse_y = pygame.mouse.get_pos()
                 minute_x = CENTER[0] + int(RADIUS * 0.7 * math.sin(minute_angle))
                 minute_y = CENTER[1] - int(RADIUS * 0.7 * math.cos(minute_angle))
@@ -153,7 +183,19 @@ def clock_main_loop():
                 if message == "The dog did not become younger and it die soon":
                     current_background = dog_old
                 elif message == "The dog back to the day it met its owner":
-                    current_background = first_met
+                    # current_background = first_met
+                    show_message = True
+                    screen.fill((0, 0, 0))
+                    message_surface = font.render(message, True, (255, 255, 255))
+                    message_rect = message_surface.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2))
+                    screen.blit(message_surface, message_rect)
+                    return_button.update(screen)
+                    pygame.display.flip()
+
+                    if event.type == pygame.MOUSEBUTTONDOWN:
+                        if return_button.checkforinput(pygame.mouse.get_pos()):
+                            common.click.play()
+                            game_is_done = True
                 clock_stopped = True
                 zoom_factor = 1.0
                 hour_angle = 0
@@ -162,9 +204,13 @@ def clock_main_loop():
         else:
             draw_scene(screen, hour_angle, minute_angle, zoom_factor, not clock_stopped)
 
+        if game_is_done:
+            game_completed = True
+            return
+        # added
         pygame.display.flip()
 
     pygame.quit()
 
 
-clock_main_loop()
+# clock_main_loop()
