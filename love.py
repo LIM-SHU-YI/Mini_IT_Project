@@ -1,14 +1,19 @@
 import pygame
+from button import Button
 
 def love_interaction():
     import sys
     import pygame
     import time
-
+    
     pygame.init()
 
-    screen = pygame.display.set_mode((1280, 720))
-    pygame.display.set_caption("Love Button Interaction")
+    SCREEN_WIDTH = 1280
+    SCREEN_HEIGHT = 720
+    screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+    icon = pygame.image.load("asset/image/gameicon.png")
+    pygame.display.set_caption("Memories")
+    pygame.display.set_icon(icon)
 
     background = pygame.transform.scale(pygame.image.load("sayyunasset/love_button/pink_background.png"), (1280, 720))
 
@@ -38,13 +43,14 @@ def love_interaction():
         ((1280 -548) // 2, (720 - 533) // 2)
     ]
 
+
     masks = [pygame.mask.from_surface(image) for image in images]
 
     progress = 0
     max_progress = 60 
     bar_width = 300
     bar_height = 40
-    bar_x = 70
+    bar_x = 110
     bar_y = 50
 
     heart_image = pygame.transform.scale(pygame.image.load("sayyunasset/love_button/heart.png"), (30, 30))
@@ -62,9 +68,19 @@ def love_interaction():
 
     font = pygame.font.Font(None, 36) 
     instruction_text = ""
+    start_time = pygame.time.get_ticks()  
+    time_limit = 20000  
+    game_won = False
+    elapsed_time = 0
+
+    return_img = pygame.image.load("asset/image/return.png")
+    return_button = Button(50, 50, image=return_img, scale=0.27)
 
     while running:
         screen.blit(background, (0, 0))
+
+        current_time = pygame.time.get_ticks()
+        remaining_time = max(0, (time_limit - (current_time - start_time)) // 1000)        
         
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -130,41 +146,49 @@ def love_interaction():
                     direction = None
 
             if progress >= 100:
+                elapsed_time = pygame.time.get_ticks() - start_time 
+                game_won = True
                 running = False 
 
         screen.blit(images[current_image_index], image_positions[current_image_index])
 
         # Progress bar
-        pygame.draw.rect(screen, (198, 184, 219), (65, 45, 310, 50), 2) 
+        pygame.draw.rect(screen, (198, 184, 219), (105, 45, 310, 50), 2) 
         pygame.draw.rect(screen, (204, 255, 255), (bar_x, bar_y, (progress / 100) * bar_width, bar_height)) 
 
         heart_count = int(progress / 10) 
         for i in range(heart_count):
             screen.blit(heart_image, (bar_x + 10 + i * 30, bar_y + 5))
 
+        timer_text = font.render(f"Time: {remaining_time} sec", True, (255, 0, 0))  
+        screen.blit(timer_text,(105, 120))
+
         text_surface = font.render(instruction_text, True, (153, 153, 255)) 
         screen.blit(text_surface, (40, 670)) 
         
+        return_button.update(screen)
+
         pygame.display.flip()
 
     screen.fill((0, 0, 0)) 
-    message_font = pygame.font.Font(None, 54) 
-    message_text = message_font.render("You have shower your dog with boundless care, making it blissful.", True, (255, 255, 255))  
-    message_rect = message_text.get_rect(center=(1280 // 2, 720 // 2))  
-    screen.blit(message_text, message_rect)
+    message_font = pygame.font.Font(None, 54)
+
+    if elapsed_time <= time_limit:
+        message_text1 = message_font.render("You have showered your dog with boundless care,", True, (255, 255, 255))
+        message_text2 = message_font.render("making it blissful.", True, (255, 255, 255))
+    else:
+        message_text1 = message_font.render("You did not pet your dog enough.", True, (255, 255, 255))
+        message_text2 = message_font.render("It is not very close to you and probably couldn't remember your face.", True, (255, 255, 255))
+
+    message_rect1 = message_text1.get_rect(center=(1280 // 2, (720 // 2) - 30)) 
+    message_rect2 = message_text2.get_rect(center=(1280 // 2, (720 // 2) + 30))
+
+    screen.blit(message_text1, message_rect1)
+    screen.blit(message_text2, message_rect2)
+
     pygame.display.flip()
 
-    time.sleep(3)
-
-
-    waiting = True
-    while waiting:
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                waiting = False
-
-    pygame.quit()
-
+    time.sleep(500)
 
 #debug
 # running=True
