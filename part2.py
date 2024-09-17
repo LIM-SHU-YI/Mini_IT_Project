@@ -60,42 +60,29 @@ b_img3 = Button(610, 119, image=img3)
 
 border_width = 15
 
-group_A = [(wait, 1), (shower, 1), (bath, 1), (blowdry, 1)] 
+def onoffm():
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            common.running = False
+            return True
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            if common.music_button.visible and common.music_button.checkforinput(pygame.mouse.get_pos()):
+                common.click.play()
+                common.music_on_off()
+                return False
+            elif common.mute_button.visible and common.mute_button.checkforinput(pygame.mouse.get_pos()):
+                common.click.play()
+                common.music_on_off()
+                return False
+    return False
 
-def display_group(group):
-    start_time = pygame.time.get_ticks()  # get initial time
-    for img, duration in group:
-        while True:
-            current_time = pygame.time.get_ticks()  # get current time
-            elapsed_time = (current_time - start_time) / 1000  # Calculate elapsed time in seconds
-            screen.blit(img, (0, 0))
-            
-            # music button update(show on screen)
-            if common.music_button.visible:
-                common.music_button.update(screen)
-            if common.mute_button.visible:
-                common.mute_button.update(screen)
+def updatem():
+    if common.music_button.visible:
+        common.music_button.update(screen)
+    if common.mute_button.visible:
+        common.mute_button.update(screen)
 
-            pygame.display.flip()
-
-            # Event handling for quit and music toggling
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    common.running = False
-                    return None
-                if event.type == pygame.MOUSEBUTTONDOWN:
-                    if common.music_button.visible and common.music_button.checkforinput(pygame.mouse.get_pos()):
-                        common.click.play()
-                        common.music_on_off()
-                    elif common.mute_button.visible and common.mute_button.checkforinput(pygame.mouse.get_pos()):
-                        common.click.play()
-                        common.music_on_off()
-
-            if elapsed_time >= duration:  # Check if the display time has passed
-                start_time = current_time  # Reset the start time for the next image
-                break  # Move to the next image
-
-
+    pygame.display.flip()
 def show_img1_1():
     clock = pygame.time.Clock()
     screen.blit(blur, (0,0))
@@ -187,42 +174,47 @@ def second_a():
                     common.music_on_off()
 
         if not showlroom:
-            for img, duration in group_A:
+            scenes = [
+                    {"image": wait, "fade_in": 1000, "display": 1000, "fade_out": 1000},
+                    {"image": shower, "fade_in": 1000, "display": 1000, "fade_out": 1000},
+                    {"image": bath, "fade_in": 1000, "display": 1000, "fade_out": 1000},
+                    {"image": blowdry, "fade_in": 1000, "display": 1000, "fade_out": 1000}
+                ]
+                
+            for index, scene in enumerate(scenes):
+                if not common.running:
+                    break
+
+                common.fade_in(screen, scene["image"], duration=scene["fade_in"])
+                pygame.display.flip()
+
                 start_time = pygame.time.get_ticks()
-                while True:
-                    current_time = pygame.time.get_ticks()
-                    elapsed_time = (current_time - start_time) / 1000
-                    screen.blit(img, (0, 0))
-
-                    if common.music_button.visible:
-                        common.music_button.update(screen)
-                    if common.mute_button.visible:
-                        common.mute_button.update(screen)
-
+                while common.running:
+                    screen.blit(scene["image"], (0,0))
+                    onoffm()
+                    updatem()
                     pygame.display.flip()
-
                     for event in pygame.event.get():
                         if event.type == pygame.QUIT:
                             common.running = False
-                            return None
-                        if event.type == pygame.MOUSEBUTTONDOWN:
-                            if common.music_button.visible and common.music_button.checkforinput(pygame.mouse.get_pos()):
-                                common.click.play()
-                                common.music_on_off()
-                            elif common.mute_button.visible and common.mute_button.checkforinput(pygame.mouse.get_pos()):
-                                common.click.play()
-                                common.music_on_off()
-
-                    if elapsed_time >= duration:
+                            return
+                    current_time = pygame.time.get_ticks()
+                    elapsed_time = current_time - start_time
+                    if elapsed_time >= scene["display"]:
+                        common.fade_out(screen, scene["image"], duration=scene["fade_out"])
                         break
 
-                    clock.tick(60)
+                    pygame.time.wait(100)
 
             showlroom = True
 
         if showlroom:
+            fade = False
             # common.running = True
             while common.running:
+                if not fade:
+                    common.fade_in(screen, livingroom, duration=1000)
+                    fade = True
                 screen.blit(lpic, (0,0))
                 b_bowl.update(screen)
                 b_img1.update(screen)
@@ -271,9 +263,9 @@ def second_a():
 
 
 # ONLY FOR DEBUGG!!! DO NOT RUN THIS WHEN RUN FROM MAINNNN!!!
-# while common.running:
-#     second_a()
-#     for event in pygame.event.get():
-#         if event.type == pygame.QUIT:
-#             common.running = False
-#             break
+while common.running:
+    second_a()
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            common.running = False
+            break
