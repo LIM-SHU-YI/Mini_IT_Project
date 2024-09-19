@@ -88,6 +88,12 @@ def love_interaction():
             if event.type == pygame.QUIT:
                 pygame.quit() 
                 running = False  
+
+            if game_he:
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    if return_button.checkforinput(pygame.mouse.get_pos()):
+                        running = False 
+                        part1()
             
             if not game_he:
                 if event.type == pygame.MOUSEBUTTONDOWN:
@@ -154,12 +160,6 @@ def love_interaction():
                 elapsed_time = pygame.time.get_ticks() - start_time 
                 game_won = True
                 game_he = True 
-
-            # else:
-            #     # Only check for the return button on the result screen
-            #     if event.type == pygame.MOUSEBUTTONDOWN:
-            #         if return_button.checkforinput(pygame.mouse.get_pos()):
-            #             running = False   # Exit the game
 
 
         # screen.blit(images[current_image_index], image_positions[current_image_index])
