@@ -11,7 +11,7 @@ def diary():
 
     width,height=1280, 720
     screen=pygame.display.set_mode((width,height))
-    pygame.display.set_caption("Diary")
+    pygame.display.set_caption("Memories")
 
     white=(255, 255, 255)
     black=(0, 0, 0)
@@ -115,6 +115,13 @@ def diary():
             pygame.draw.circle(erasablemask,(0, 0, 0, 0),(pencilpos[0]-backgroundrect.x,pencilpos[1]-backgroundrect.y),brushsize)
 
 
+    def updatem():
+        if common.music_button.visible:
+            common.music_button.update(screen)
+        if common.mute_button.visible:
+            common.mute_button.update(screen)
+
+
     running=True
     pencilactive=False
     lastpos=None
@@ -124,6 +131,7 @@ def diary():
         for event in pygame.event.get():
             if event.type==pygame.QUIT:
                 running=False
+                pygame.quit()
             if event.type==pygame.MOUSEBUTTONDOWN:
                 mousepos=pygame.mouse.get_pos()
                 if scene==1 and diaryrect.collidepoint(mousepos):
@@ -132,9 +140,19 @@ def diary():
                 if scene==2 and pencilrect.collidepoint(mousepos):
                     pencilactive=True
                     lastpos=mousepos
+
+                if common.music_button.visible and common.music_button.checkforinput(pygame.mouse.get_pos()):
+                    common.click.play()
+                    common.music_on_off()
+                elif common.mute_button.visible and common.mute_button.checkforinput(pygame.mouse.get_pos()):
+                    common.click.play()
+                    common.music_on_off()
+
+                
             if event.type==pygame.MOUSEBUTTONUP:
                 pencilactive=False
                 lastpos=None
+
 
         if pencilactive:
             mousepos=pygame.mouse.get_pos()
@@ -152,17 +170,24 @@ def diary():
             if erasedarea>=83:
                 showmsg=True
                 # print("83% erased! Showing message...")  
+        updatem()
 
         if showmsg:
             return_button.update(screen)
             for event in pygame.event.get():
-                        if event.type == pygame.QUIT:
-                            running = False
-                            pygame.quit()
-                        if event.type == pygame.MOUSEBUTTONDOWN:
-                            if return_button.checkforinput(pygame.mouse.get_pos()):
-                                common.click.play()
-                                game_is_done = True
+                if event.type == pygame.QUIT:
+                    running = False
+                    pygame.quit()
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    if return_button.checkforinput(pygame.mouse.get_pos()):
+                        common.click.play()
+                        game_is_done = True
+                    if common.music_button.visible and common.music_button.checkforinput(pygame.mouse.get_pos()):
+                        common.click.play()
+                        common.music_on_off()
+                    elif common.mute_button.visible and common.mute_button.checkforinput(pygame.mouse.get_pos()):
+                        common.click.play()
+                        common.music_on_off()
 
 
         pygame.display.flip()  # Update display

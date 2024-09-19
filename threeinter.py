@@ -33,18 +33,25 @@ completed_games = {
     "bone": False
 }
 
-def book():
-    diary()
-    completed_games["diary"] = True
+def checkmdone():
+    return all(completed_games.values())
 
-def puzz():
+def run_minigames(minigame):
+    if completed_games[minigame]:
+        print(f"{minigame} is already completed. You cannot play it again.")
+        return
+    if minigame == "diary":
+        diary()
+        completed_games["diary"] = True
+    if minigame == "puzzle":
+        puzzle()
+        completed_games["puzzle"] = True
+    if minigame == "bone":
+        bone()
+        completed_games["bone"] = True
 
-    puzzle()  # Play the puzzle game
-    completed_games["puzzle"] = True
-
-def bonegame():
-    bone()
-    completed_games["bone"] = True
+    if checkmdone():
+        bags()      # call bag.py when all games are done
 
 def bags():
     bag()
@@ -91,15 +98,18 @@ def kitinterface():
                         if event.button == 1:
                             if boneb_1.checkforinput(pygame.mouse.get_pos()):
                                 common.click.play()
-                                bonegame()
+                                # bonegame()
+                                run_minigames("bone")
 
                             if bookb_1.checkforinput(pygame.mouse.get_pos()):
                                 common.click.play()
-                                book()
+                                # book()
+                                run_minigames("diary")
 
                             if picb_1.checkforinput(pygame.mouse.get_pos()):
                                 common.click.play()
-                                puzz()
+                                # puzz()
+                                run_minigames("puzzle")
 
                         if common.music_button.visible and common.music_button.checkforinput(pygame.mouse.get_pos()):
                             common.click.play()
@@ -107,9 +117,6 @@ def kitinterface():
                         elif common.mute_button.visible and common.mute_button.checkforinput(pygame.mouse.get_pos()):
                             common.click.play()
                             common.music_on_off()
-
-                if completed_games["diary"] and completed_games["puzzle"] and completed_games["bone"]:
-                    bags()              # call bag.py when all games are done
 
         if game_completed:
             break
