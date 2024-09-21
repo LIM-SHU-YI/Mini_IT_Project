@@ -93,7 +93,7 @@ def love_interaction():
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     if return_button.checkforinput(pygame.mouse.get_pos()):
                         running = False 
-                        part1()
+                        # part1()
             
             if not game_he:
                 if event.type == pygame.MOUSEBUTTONDOWN:
@@ -210,10 +210,10 @@ def love_interaction():
 
 
 #debug
-# running=True
-# while running:
-#     love_interaction()
-#     for event in pygame.event.get():
-#         if event.type == pygame.QUIT:
-#             running = False
-#             break
+running=True
+while running:
+    love_interaction()
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            running = False
+            break
