@@ -173,6 +173,7 @@ def bags():
     bag()
 
 def kitinterface():
+    infront()
     global game_completed
     game_completed =  False
     clock = pygame.time.Clock()
