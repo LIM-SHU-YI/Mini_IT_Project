@@ -1,6 +1,7 @@
 import pygame
 import common
 from button import Button
+import doglearning
 
 SCREEN_WIDTH = 1280
 SCREEN_HEIGHT = 720
@@ -181,6 +182,27 @@ clear = pygame.image.load("asset/image/part2a/clear.png")
 choco = pygame.image.load("asset/image/part2a/choco.png")
 dead = pygame.image.load("asset/image/part2a/dead.png")
 dead2 = pygame.image.load("asset/image/part2a/dead2.png")
+button_bg = pygame.image.load("asset/image/buttonbg.png")
+ending = pygame.image.load("asset/image/part2a/ending.png")
+
+def rundl():
+    # pygame.time.wait(2000)
+    common.fade_in(screen, button_bg, duration=1000)
+    pygame.display.flip()
+
+    start_time = pygame.time.get_ticks()
+    while common.running:
+        current_time = pygame.time.get_ticks()
+        elapsed_time = current_time - start_time
+        if elapsed_time >= 3000:
+            doglearning.doglearning_main_game_loop()
+            break
+
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                common.running = False
+                return
+        pygame.time.wait(100)
 
 # Initialize DraggableObjects
 redempty_obj = DraggableObject(redempty, (900, 454), draggable=False, visible=True)
@@ -198,6 +220,8 @@ choco_obj = DraggableObject(choco, (665,625))
 def p2int():
     common.running = True
     global current_dragging_obj
+
+    delay = None
 
     while common.running:
         for event in pygame.event.get():
@@ -234,8 +258,9 @@ def p2int():
 
         tracking_count = sum([dogfood_dropped, water_dropped, toy_dropped, bone_dropped])
         # display hearts based on number of tracking triggered
-        if tracking_count == 4:
+        if tracking_count == 4 and delay is None:
             screen.blit(heart4, (0, 0))  # Display heart4 if all four events occurred
+            delay = pygame.time.get_ticks()
         elif tracking_count == 3:
             screen.blit(heart3, (0, 0))  # Display heart3 if three events occurred
         elif tracking_count == 2:
@@ -243,11 +268,22 @@ def p2int():
         elif tracking_count == 1:
             screen.blit(heart, (0, 0))   # Display heart if only one event occurred
 
-
         if common.music_button.visible:
             common.music_button.update(screen)
         if common.mute_button.visible:
             common.mute_button.update(screen)
+        
+        if delay:
+            screen.blit(ending, (0, 0))
+            if common.music_button.visible:
+                common.music_button.update(screen)
+            if common.mute_button.visible:
+                common.mute_button.update(screen)
+            pygame.display.flip()
+            current_time = pygame.time.get_ticks()
+            if current_time - delay >= 850:
+                rundl()  # Call the rundl function after the delay
+                delay = None  # Reset delay to avoid repeated calls
 
         # Update the display
         pygame.display.flip()
