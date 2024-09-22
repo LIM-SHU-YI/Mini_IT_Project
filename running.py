@@ -1,11 +1,11 @@
 import pygame
 
-def running_race_game():  
+def running_race_game():
     import pygame
     import sys
     import time
     import random
-
+    from button import Button
     pygame.init()
 
     SCREEN_WIDTH = 1280
@@ -46,6 +46,8 @@ def running_race_game():
     lose_pic1 = pygame.transform.scale(lose_pic1, (1280, 720))
     lose_pic2 = pygame.image.load("sayyunasset/running_race/end_3.png")
     lose_pic2 = pygame.transform.scale(lose_pic2, (1280, 720))
+    return_img = pygame.image.load("asset/image/return.png")
+    return_button = Button(50, 50, image=return_img, scale=0.27)
 
     dogdog_mask = pygame.mask.from_surface(current_dog_pic)
     obstacle_mask = pygame.mask.from_surface(obstacle_pic)
@@ -57,7 +59,6 @@ def running_race_game():
             if not obstacles or abs(obstacle_y - obstacles[-1].y) > vertical_spacing:
                 break
         return pygame.Rect(x, obstacle_y, obstacle_1280, obstacle_height)
-
     # Generate initial obstacles
     last_x = 1280
     for _ in range(15):
@@ -91,13 +92,13 @@ def running_race_game():
                 pygame.quit()
                 sys.exit()
             elif event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_RIGHT:
+                if event.key == pygame.K_RIGHT or event.key == pygame.K_d:
                     dogdog_x += dogdog_speed
-                if event.key == pygame.K_LEFT:
+                if event.key == pygame.K_LEFT or event.key == pygame.K_a:
                     dogdog_x -= dogdog_speed
-                if event.key == pygame.K_UP:
+                if event.key == pygame.K_UP or event.key == pygame.K_w:
                     dogdog_y -= dogdog_speed
-                if event.key == pygame.K_DOWN:
+                if event.key == pygame.K_DOWN or event.key == pygame.K_s:
                     dogdog_y += dogdog_speed
 
                 if frame_toggle:
@@ -137,7 +138,6 @@ def running_race_game():
                     obstacles.append(create_obstacle(last_x))
                 start_time = time.time()
 
-
         pygame.draw.line(screen, BLACK, (finishline, 0), (finishline, 720), 5)
 
         timer_text = font.render(f"Time Left: {int(time_left)}s", True, BROWN)
@@ -154,29 +154,38 @@ def running_race_game():
 
     screen.blit(background_pic, (0, 0))
     if dogdog_win:
-        screen.blit(win_pic,(0, 0))
+        screen.blit(win_pic, (0, 0))
         endtxt = font.render("You Win!", True, GREEN)
-        screen.blit(endtxt, (1280 // 2 - 100, 720 // 2))
-
     else:
         screen.blit(lose_pic1, (0, 0))
         pygame.display.flip()
         pygame.time.delay(1000)
         screen.blit(lose_pic2, (0, 0))
         endtxt = font.render("YOU LOSE!", True, RED)
-        screen.blit(endtxt, (1280 // 2 - 100, 720 // 2))
 
+    screen.blit(endtxt, (1280 // 2 - 100, 720 // 2))
+    return_button.update(screen)
     pygame.display.flip()
 
-    time.sleep(500)
+    waiting = True
+    while waiting:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                waiting = False
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                if event.button == 1:
+                    if return_button.is_clicked(event.pos):
+                        waiting = False
+
+    pygame.quit()
+    sys.exit()
 
 
-#debug
-# running=True
+# Debug
+# running = True
 # while running:
 #     running_race_game()
 #     for event in pygame.event.get():
 #         if event.type == pygame.QUIT:
 #             running = False
 #             break
-

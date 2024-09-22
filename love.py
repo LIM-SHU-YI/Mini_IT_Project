@@ -45,7 +45,6 @@ def love_interaction():
         ((1280 -548) // 2, (720 - 533) // 2)
     ]
 
-
     masks = [pygame.mask.from_surface(image) for image in images]
 
     progress = 0
@@ -86,6 +85,10 @@ def love_interaction():
         current_time = pygame.time.get_ticks()
         remaining_time = max(0, (time_limit - (current_time - start_time)) // 1000)
 
+        if remaining_time <= 0:
+            game_he = True  
+            elapsed_time = time_limit
+
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit() 
@@ -96,10 +99,9 @@ def love_interaction():
                     if return_button.checkforinput(pygame.mouse.get_pos()):
                         running = False 
                         if elapsed_time <= time_limit:
-                            part2()
-
+                            part2b.second_b()
                         else:
-                            part2b()    
+                            part2.second_a()
             
             if not game_he:
                 if event.type == pygame.MOUSEBUTTONDOWN:
@@ -185,13 +187,11 @@ def love_interaction():
             text_surface = font.render(instruction_text, True, (153, 153, 255)) 
             screen.blit(text_surface, (40, 670)) 
             
-            # pygame.display.flip()
-        
         else:
             screen.fill((0, 0, 0)) 
             message_font = pygame.font.Font(None, 54)
 
-            if elapsed_time <= time_limit:
+            if progress >= 100:
                 message_text1 = message_font.render("You have showered your dog with boundless care,", True, (255, 255, 255))
                 message_text2 = message_font.render("making it blissful.", True, (255, 255, 255))
             else:
@@ -216,10 +216,10 @@ def love_interaction():
 
 
 #debug
-running=True
-while running:
-    love_interaction()
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            running = False
-            break
+# running=True
+# while running:
+#     love_interaction()
+#     for event in pygame.event.get():
+#         if event.type == pygame.QUIT:
+#             running = False
+#             break
