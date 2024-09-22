@@ -1,21 +1,31 @@
 import pygame
 import sys
+import ctypes
 import common
 from button import Button
-from drag_game import DragGame
-from emotion_game import EmotionGame
 
-# Define screen size
+pygame.init()
 SCREEN_WIDTH = 1280
 SCREEN_HEIGHT = 720
-
-# Create game window
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 pygame.display.set_caption("Memories")
 icon = pygame.image.load("asset/image/gameicon.png")
 pygame.display.set_icon(icon)
 
-# Images
+#Initialize for improved text input
+ctypes.windll.user32.SetProcessDPIAware()
+ctypes.windll.imm32.ImmDisableIME(0)
+
+#Game states
+MAIN_MENU = 0
+KIDS_VIEW = 1
+BOYFRIEND_VIEW = 2
+DOGOWNER_VIEW = 3
+DRAG_GAME = 4
+EMOTION_GAME = 5
+FINAL_RESULT = 6
+
+#Interface images
 interface_bg = pygame.image.load("Photo used/Match/interfaceview.png")
 kidsinter_img = pygame.image.load("Photo used/Match/kidsinter.png")
 kids_img = pygame.image.load("Photo used/Match/kids.png")
@@ -24,23 +34,311 @@ boyfriend_img = pygame.image.load("Photo used/Match/boyfriend.png")
 dogownerinter_img = pygame.image.load("Photo used/Match/dogownerinter.png")
 dogowner_img = pygame.image.load("Photo used/Match/dogowner.png")
 
-# Gallery buttons
+#Interface buttons
 kidsinter_btn = Button(260, 245, image=kidsinter_img)
 boyfriendinter_btn = Button(646, 236, image=boyfriendinter_img)
 dogownerinter_btn = Button(1040, 236, image=dogownerinter_img)
-
 back_btn = Button(50, 50, text_input="BACK", font=common.arcade(30), base_color="Black", hovering_color="Gray")
 
-# Game states
-MAIN_MENU, KIDS_VIEW, BOYFRIEND_VIEW, DOGOWNER_VIEW, DRAG_GAME, EMOTION_GAME, FINAL_RESULT = range(7)
+class DraggableItem:
+    def __init__(self, x, y, image, correct_gallery):
+        self.image = image
+        self.rect = self.image.get_rect(topleft=(x, y))
+        self.mask = pygame.mask.from_surface(self.image)
+        self.dragging = False
+        self.offset_x = 0
+        self.offset_y = 0
+        self.original_pos = (x, y)
+        self.correct_gallery = correct_gallery
+        self.visible = True
+        self.placed_correctly = False
 
-current_state = MAIN_MENU
+    def update(self, event_list):
+        if not self.visible or self.placed_correctly:
+            return
 
-# Initialize games
-drag_game = DragGame(screen)
-emotion_game = EmotionGame(screen)
+        mouse_pos = pygame.mouse.get_pos()
 
-def draw_main_menu():
+        for event in event_list:
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if event.button == 1:
+                    relative_pos = (mouse_pos[0] - self.rect.x, mouse_pos[1] - self.rect.y)
+                    if self.rect.collidepoint(mouse_pos) and self.mask.get_at(relative_pos):
+                        self.dragging = True
+                        self.offset_x = self.rect.x - mouse_pos[0]
+                        self.offset_y = self.rect.y - mouse_pos[1]
+            elif event.type == pygame.MOUSEBUTTONUP:
+                if event.button == 1:
+                    self.dragging = False
+
+        if self.dragging:
+            self.rect.x = mouse_pos[0] + self.offset_x
+            self.rect.y = mouse_pos[1] + self.offset_y
+
+    def draw(self, surface):
+        if self.visible and not self.placed_correctly:
+            surface.blit(self.image, self.rect)
+
+    def reset_position(self):
+        self.rect.topleft = self.original_pos
+
+    def is_colliding_with(self, button):
+        if not button.rect:
+            return False
+        offset = (button.rect.x - self.rect.x, button.rect.y - self.rect.y)
+        return self.mask.overlap(pygame.mask.from_surface(button.image), offset) is not None
+
+class RELICSITEM:
+    def __init__(self, screen):
+        self.screen = screen
+        self.all_items_placed = False
+        self.game_started = False
+
+        # Drag images
+        self.interface_bg = pygame.image.load("Photo used/Match/interfaceview.png")
+        self.envelop_img = pygame.image.load("Photo used/Match/envelop.png")
+        self.flower_img = pygame.image.load("Photo used/Match/flower.png")
+        self.bonepresent_img = pygame.image.load("Photo used/Match/bonepresent.png")
+        self.start_btn_img = pygame.image.load("Photo used/Match/itemdragstart.png")
+        
+        # Drag buttons
+        self.start_btn = Button(1040, 590, image=self.start_btn_img)
+
+        # Draggable items
+        self.items = [
+            DraggableItem(940, 610, self.envelop_img, kidsinter_btn),
+            DraggableItem(240, 590, self.flower_img, boyfriendinter_btn),
+            DraggableItem(540, 585, self.bonepresent_img, dogownerinter_btn)
+        ]
+
+    def draw(self):
+        self.screen.blit(self.interface_bg, (0, 0))
+        kidsinter_btn.update(self.screen)
+        boyfriendinter_btn.update(self.screen)
+        dogownerinter_btn.update(self.screen)
+        if self.game_started:
+            for item in self.items:
+                item.draw(self.screen)
+        else:
+            self.start_btn.update(self.screen)
+        back_btn.update(self.screen)
+
+    def update(self, event_list):
+        self.draw()
+
+        for event in event_list:
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if self.start_btn.checkforinput(event.pos) and not self.game_started:
+                    self.game_started = True
+                elif back_btn.checkforinput(event.pos):
+                    return "MAIN_MENU"
+
+            if event.type == pygame.MOUSEBUTTONUP and self.game_started:
+                for item in self.items:
+                    if item.dragging and not item.placed_correctly:
+                        if item.is_colliding_with(item.correct_gallery):
+                            self.show_message("Correct!")
+                            item.placed_correctly = True
+                            item.visible = False
+                        elif any(item.is_colliding_with(gallery) for gallery in [kidsinter_btn, boyfriendinter_btn, dogownerinter_btn]):
+                            self.show_message("Incorrect!")
+                            item.reset_position()
+                        else:
+                            item.reset_position()
+
+        if self.game_started:
+            for item in self.items:
+                item.update(event_list)
+
+            self.all_items_placed = all(item.placed_correctly for item in self.items)
+            if self.all_items_placed:
+                self.show_message("All items placed correctly!")
+                return "MAIN_MENU"
+
+        return None
+
+    def show_message(self, message):
+        self.screen.fill((255, 255, 255))
+        text, text_rect = common.normal_text(message, common.arcade(30), (0, 0, 0), (self.screen.get_width() // 2, self.screen.get_height() // 2))
+        self.screen.blit(text, text_rect)
+        pygame.display.flip()
+        pygame.time.wait(2000)
+
+    def reset(self):
+        self.game_started = False
+        self.all_items_placed = False
+        for item in self.items:
+            item.reset_position()
+            item.placed_correctly = False
+            item.visible = True
+
+class EmotionGame:
+    def __init__(self, screen):
+        self.screen = screen
+        self.current_emotion = ""
+        self.user_text = ""
+        self.hint_count = 0
+        self.total_hint_count = 0
+        self.wrong_answers = 0
+        self.completed_emotions = set()
+        self.current_hint = ""
+        self.active = False
+        self.input_rect = pygame.Rect(screen.get_width() // 2 - 70, 300, 140, 32)
+        self.color_active = pygame.Color('lightskyblue3')
+        self.color_passive = pygame.Color('gray15')
+        self.font = common.arcade(32)
+
+        # Emotion images
+        self.kidsemo_img = pygame.image.load("Photo used/Match/emozuo.png")
+        self.boyfriendemo_img = pygame.image.load("Photo used/Match/emozhong.png")
+        self.dogowneremo_img = pygame.image.load("Photo used/Match/emoyou.png")
+
+        # Emotion buttons
+        self.kidsemo_btn = Button(260, 400, image=self.kidsemo_img)
+        self.boyfriendemo_btn = Button(646, 400, image=self.boyfriendemo_img)
+        self.dogowneremo_btn = Button(1040, 400, image=self.dogowneremo_img)
+
+        self.hint_btn = Button(screen.get_width() - 150, 50, text_input="HINT", font=common.arcade(30), base_color="Black", hovering_color="Gray")
+
+    def draw_emotion_buttons(self, screen):
+        for emotion, btn in zip(["sad", "angry", "happy"], [self.kidsemo_btn, self.boyfriendemo_btn, self.dogowneremo_btn]):
+            if emotion not in self.completed_emotions:
+                btn.update(screen)
+            else:
+                pygame.draw.rect(screen, (255, 255, 255), btn.rect)
+                text, text_rect = common.normal_text(emotion.capitalize(), common.arcade(30), (0, 0, 0), btn.rect.center)
+                screen.blit(text, text_rect)
+
+    def check_emotion_button_click(self, pos):
+        if self.kidsemo_btn.checkforinput(pos) and "sad" not in self.completed_emotions:
+            self.current_emotion = "sad"
+            print(f"Set current_emotion to: {self.current_emotion}") 
+            return True
+        elif self.boyfriendemo_btn.checkforinput(pos) and "angry" not in self.completed_emotions:
+            self.current_emotion = "angry"
+            print(f"Set current_emotion to: {self.current_emotion}") 
+            return True
+        elif self.dogowneremo_btn.checkforinput(pos) and "happy" not in self.completed_emotions:
+            self.current_emotion = "happy"
+            print(f"Set current_emotion to: {self.current_emotion}") 
+            return True
+        return False
+
+    def draw_emotion_question(self):
+        self.screen.fill((255, 255, 255))
+        back_btn.update(self.screen)
+        self.hint_btn.update(self.screen)
+        
+        question_text, question_rect = common.normal_text("What is the emotion shown by this gallery", common.arcade(30), (0, 0, 0), (self.screen.get_width() // 2, 200))
+        self.screen.blit(question_text, question_rect)
+
+        color = self.color_active if self.active else self.color_passive
+        pygame.draw.rect(self.screen, color, self.input_rect, 2)
+
+        text_surface = self.font.render(self.user_text, True, (0, 0, 0))
+        self.screen.blit(text_surface, (self.input_rect.x + 5, self.input_rect.y + 5))
+
+        self.input_rect.w = max(140, text_surface.get_width() + 10)
+
+        if self.current_hint:
+            hint_text, hint_rect = common.normal_text(self.current_hint, common.arcade(24), (0, 0, 0), (self.screen.get_width() // 2, 400))
+            self.screen.blit(hint_text, hint_rect)
+
+    def draw_emotion_result(self, result):
+        self.screen.fill((255, 255, 255))
+        result_text, result_rect = common.normal_text(result, common.arcade(50), (0, 0, 0), (self.screen.get_width() // 2, self.screen.get_height() // 2 - 50))
+        emotion_text, emotion_rect = common.normal_text(f"The emotion was: {self.current_emotion}", common.arcade(30), (0, 0, 0), (self.screen.get_width() // 2, self.screen.get_height() // 2 + 50))
+        self.screen.blit(result_text, result_rect)
+        self.screen.blit(emotion_text, emotion_rect)
+
+    def get_hint(self):
+        if self.total_hint_count < 2 and self.hint_count < 2:
+            self.hint_count += 1
+            self.total_hint_count += 1
+            if self.hint_count == 1:
+                self.current_hint = f"The answer has {len(self.current_emotion)} letters."
+            else:
+                self.current_hint = f"The first letter is '{self.current_emotion[0]}'."
+        else:
+            self.current_hint = "No more hints available."
+        return self.current_hint
+
+    def check_emotion_answer(self, user_input):
+        return user_input.lower().strip() == self.current_emotion.lower().strip()
+    
+    def show_message(self, message):
+        self.screen.fill((255, 255, 255))
+        text, text_rect = common.normal_text(message, common.arcade(30), (0, 0, 0), (self.screen.get_width() // 2, self.screen.get_height() // 2))
+        self.screen.blit(text, text_rect)
+        pygame.display.flip()
+        pygame.time.wait(500)
+
+    def update(self, event_list):
+        self.draw_emotion_question()
+
+        for event in event_list:
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if self.input_rect.collidepoint(event.pos):
+                    self.active = True
+                else:
+                    self.active = False
+                if self.hint_btn.checkforinput(event.pos):
+                    self.current_hint = self.get_hint()
+                if back_btn.checkforinput(event.pos):
+                    return "MAIN_MENU"
+
+            if event.type == pygame.KEYDOWN:
+                if self.active:
+                    if event.key == pygame.K_RETURN:
+                        if self.check_emotion_answer(self.user_text):
+                            self.completed_emotions.add(self.current_emotion)
+                            self.show_message("Correct!")
+                        else:
+                            self.wrong_answers += 1
+                            self.show_message("Wrong!")
+                        
+                        pygame.display.flip()
+                        pygame.time.wait(2000)
+                        
+                        if len(self.completed_emotions) == 3 or self.wrong_answers >= 3:
+                            return "FINAL_RESULT"
+                        else:
+                            self.reset_current_emotion()
+                            return "MAIN_MENU"
+                    elif event.key == pygame.K_BACKSPACE:
+                        self.user_text = self.user_text[:-1]
+                    else:
+                        self.user_text += event.unicode
+
+        self.draw_input_box()
+        pygame.display.flip()
+        return None
+
+
+    def draw_input_box(self):
+        color = self.color_active if self.active else self.color_passive
+        pygame.draw.rect(self.screen, color, self.input_rect, 2)
+        text_surface = self.font.render(self.user_text, True, (0, 0, 0))
+        self.screen.blit(text_surface, (self.input_rect.x + 5, self.input_rect.y + 5))
+        self.input_rect.w = max(140, text_surface.get_width() + 10)
+
+    def reset_current_emotion(self):
+        self.user_text = ""
+        self.hint_count = 0
+        self.current_hint = ""
+        self.active = False
+
+    def reset(self):
+        self.user_text = ""
+        self.hint_count = 0
+        self.total_hint_count = 0
+        self.wrong_answers = 0
+        self.completed_emotions = set()
+        self.current_hint = ""
+        self.active = False
+        self.current_emotion = ""
+
+def draw_main_menu(screen, drag_game, emotion_game):
     screen.blit(interface_bg, (0, 0))
     if not drag_game.all_items_placed:
         drag_game.start_btn.update(screen)
@@ -50,18 +348,23 @@ def draw_main_menu():
     if drag_game.all_items_placed:
         emotion_game.draw_emotion_buttons(screen)
 
-def draw_view(image):
+def draw_view(screen, image):
     screen.blit(image, (0, 0))
     back_btn.update(screen)
 
-def draw_final_result():
+def draw_final_result(screen, emotion_game):
     screen.fill((255, 255, 255))
-    result_text, result_rect = common.normal_text("You already learn human emotion", common.arcade(50), (0, 0, 0), (SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2))
-    screen.blit(result_text, result_rect)
-    back_btn.update(screen)
+    if len(emotion_game.completed_emotions) == 3:
+        result_text = "You have learned human emotions!"
+    else:
+        result_text = "You did not learn human emotions."
+    text, text_rect = common.normal_text(result_text, common.arcade(60), (0, 0, 0), (SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2))
+    screen.blit(text, text_rect)
 
 def match_main():
-    global current_state
+    current_state = MAIN_MENU
+    drag_game = RELICSITEM(screen)
+    emotion_game = EmotionGame(screen)
 
     clock = pygame.time.Clock()
     running = True
@@ -76,7 +379,6 @@ def match_main():
                 if current_state == MAIN_MENU:
                     if drag_game.start_btn.checkforinput(event.pos) and not drag_game.all_items_placed:
                         current_state = DRAG_GAME
-                        drag_game.reset()
                     elif kidsinter_btn.checkforinput(event.pos):
                         current_state = KIDS_VIEW
                     elif boyfriendinter_btn.checkforinput(event.pos):
@@ -87,19 +389,18 @@ def match_main():
                         emotion_clicked = emotion_game.check_emotion_button_click(event.pos)
                         if emotion_clicked:
                             current_state = EMOTION_GAME
-                            emotion_game.reset()
                 elif current_state in [KIDS_VIEW, BOYFRIEND_VIEW, DOGOWNER_VIEW]:
                     if back_btn.checkforinput(event.pos):
                         current_state = MAIN_MENU
 
         if current_state == MAIN_MENU:
-            draw_main_menu()
+            draw_main_menu(screen, drag_game, emotion_game)
         elif current_state == KIDS_VIEW:
-            draw_view(kids_img)
+            draw_view(screen, kids_img)
         elif current_state == BOYFRIEND_VIEW:
-            draw_view(boyfriend_img)
+            draw_view(screen, boyfriend_img)
         elif current_state == DOGOWNER_VIEW:
-            draw_view(dogowner_img)
+            draw_view(screen, dogowner_img)
         elif current_state == DRAG_GAME:
             drag_game_result = drag_game.update(event_list)
             if drag_game_result == "MAIN_MENU":
@@ -111,14 +412,18 @@ def match_main():
             elif emotion_game_result == "FINAL_RESULT":
                 current_state = FINAL_RESULT
         elif current_state == FINAL_RESULT:
-            draw_final_result()
+            draw_final_result(screen, emotion_game)
 
         pygame.display.flip()
         clock.tick(60)
 
     pygame.quit()
-    import sys
     sys.exit()
 
-if __name__ == "__main__":
-    match_main()
+match_main()
+
+#For Debuging Use
+#print(f"Before check: user_text='{self.user_text}', current_emotion='{self.current_emotion}'")
+#print(f"Set current_emotion to: {self.current_emotion}") 
+#print(f"Checking: user input '{user_input}' against '{self.current_emotion}'")
+#print(f"Result: {result}")
