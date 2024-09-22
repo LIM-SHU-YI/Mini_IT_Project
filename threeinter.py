@@ -111,7 +111,7 @@ def displaystory2():
     while True:
         elapsedtime=pygame.time.get_ticks()-starttime
         screen.fill((0,0,0))
-        drawtext(screen,storytext1,font,(255,255,255),50,50)
+        drawtext(screen,storytext2,font,(255,255,255),50,50)
         pygame.display.flip()
 
         if elapsedtime >= displayduration:
@@ -123,7 +123,7 @@ def displaystory2():
         clock.tick(60)
 def fadetransition(screen,img1,img2,duration=1500):
     starttime=pygame.time.get_ticks()
-    fadeduration=5000
+    fadeduration=duration
     while True:
         elapsedtime=pygame.time.get_ticks()-starttime
         alpha=(elapsedtime/fadeduration)*255
@@ -240,10 +240,10 @@ def kitinterface():
     pygame.quit()
 
 # ONLY FOR DEBUGG!!! DO NOT RUN THIS WHEN RUN FROM MAINNNN!!!
-while common.running:
-    infront()
-    kitinterface()
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            common.running = False
-            break
+# while common.running:
+#     infront()
+#     kitinterface()
+#     for event in pygame.event.get():
+#         if event.type == pygame.QUIT:
+#             common.running = False
+#             break

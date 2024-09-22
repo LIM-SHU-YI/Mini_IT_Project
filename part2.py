@@ -263,9 +263,9 @@ def second_a():
 
 
 # ONLY FOR DEBUGG!!! DO NOT RUN THIS WHEN RUN FROM MAINNNN!!!
-while common.running:
-    second_a()
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            common.running = False
-            break
+# while common.running:
+#     second_a()
+#     for event in pygame.event.get():
+#         if event.type == pygame.QUIT:
+#             common.running = False
+#             break

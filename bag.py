@@ -113,7 +113,6 @@ def bag():
                     if event.type == pygame.QUIT:
                         stop_scene = False  # Allow the game to quit
                         running = False  # Signal to stop the main loop
-                # Limit the loop to avoid high CPU usage
                 pygame.time.wait(1000)
                 running_race_game()
                 running=False
