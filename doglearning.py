@@ -3,6 +3,7 @@ import random
 import os
 from button import Button
 from common import text_with_shadow, normal_text, cutedisplay
+import threeinter
 
 pygame.init()
 
@@ -48,6 +49,7 @@ clicked_sequence = []
 replay_count = 3
 audio_playing = False
 buttons_visible = False
+delay = None
 
 
 audio_files = {word: pygame.mixer.Sound(f"Audio Used/{word.replace(' ', '_').lower()}.wav") for word in words}
@@ -115,6 +117,7 @@ def handle_button_click(word):
         game_over = True
 
 def draw_game():
+    global delay
     screen.blit(background, (0, 0))
     
     if not game_over:
@@ -132,12 +135,20 @@ def draw_game():
             message = "You did not learn how to use the button"
         else:
             message = "You know how to use the button already"
-        
+            if delay is None:
+                delay = pygame.time.get_ticks()
+              
         game_over_text = normal_text(message, cutedisplay(40), (0, 0, 0), (SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2))
         screen.blit(*game_over_text)
 
+        if delay:
+            current_time = pygame.time.get_ticks()
+            if current_time - delay >= 1500:
+                threeinter.kitinterface()
+                delay = None  # Reset delay to avoid repeated calls
+
 def doglearning_main_game_loop():
-    global running, replay_count, buttons_visible, audio_playing
+    global running, replay_count, buttons_visible, audio_playing, delay
     
     new_question()
     
@@ -177,4 +188,4 @@ def doglearning_main_game_loop():
     pygame.quit()
 
 
-doglearning_main_game_loop()
+# doglearning_main_game_loop()
