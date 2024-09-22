@@ -1,6 +1,7 @@
 import pygame
 from button import Button
 import part2
+import part2b
 
 def love_interaction():
     import sys
@@ -94,7 +95,11 @@ def love_interaction():
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     if return_button.checkforinput(pygame.mouse.get_pos()):
                         running = False 
-                        part2()
+                        if elapsed_time <= time_limit:
+                            part2()
+
+                        else:
+                            part2b()    
             
             if not game_he:
                 if event.type == pygame.MOUSEBUTTONDOWN:
