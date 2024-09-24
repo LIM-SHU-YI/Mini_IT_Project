@@ -146,7 +146,7 @@ def fadetransition(screen,img1,img2,duration=10000):
 
 def infront():
     displaystory()
-    fadetransition(screen,firstimg,secondimg,duration=3000)
+    fadetransition(screen,firstimg,secondimg,duration=10000)
     displaystory2()
 
 def checkmdone():
