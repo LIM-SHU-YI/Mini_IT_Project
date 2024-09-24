@@ -3,6 +3,8 @@ def bag():
     import pygame 
     import sys
     import common
+    from button import Button
+    from running import running_race_game
 
     pygame.init()
 
@@ -24,6 +26,9 @@ def bag():
     item1=pygame.transform.scale(item1,(200,200))
     item2=pygame.transform.scale(item2,(300,200))
     item3=pygame.transform.scale(item3,(250,250))
+    return_img = pygame.image.load("asset/image/return.png")
+    return_button = Button(50, 50, image=return_img, scale=0.27)
+
 
     class item(pygame.sprite.Sprite):
         def __init__(self,image,pos,rectsize):
@@ -108,8 +113,10 @@ def bag():
                     if event.type == pygame.QUIT:
                         stop_scene = False  # Allow the game to quit
                         running = False  # Signal to stop the main loop
-                # Limit the loop to avoid high CPU usage
-                pygame.time.wait(100)
+                pygame.time.wait(1000)
+                running_race_game()
+                running=False
+
             # pygame.time.wait(3000)
             # running=False
 
