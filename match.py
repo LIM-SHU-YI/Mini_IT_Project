@@ -33,12 +33,39 @@ boyfriendinter_img = pygame.image.load("Photo used/Match/boyfriendinter.png")
 boyfriend_img = pygame.image.load("Photo used/Match/boyfriend.png")
 dogownerinter_img = pygame.image.load("Photo used/Match/dogownerinter.png")
 dogowner_img = pygame.image.load("Photo used/Match/dogowner.png")
+back_img = pygame.image.load("asset/image/return.png")
+music_img = pygame.image.load("asset/image/m.png")
+mute_img = pygame.image.load("asset/image/mm.png")
 
 #Interface buttons
 kidsinter_btn = Button(260, 245, image=kidsinter_img)
 boyfriendinter_btn = Button(646, 236, image=boyfriendinter_img)
 dogownerinter_btn = Button(1040, 236, image=dogownerinter_img)
-back_btn = Button(50, 50, text_input="BACK", font=common.arcade(30), base_color="Black", hovering_color="Gray")
+back_btn = Button(50, 50, image=back_img,scale=0.27)
+music_button = Button(1230, 50, image=music_img, scale=0.35)
+mute_button = Button(1230, 50, image=mute_img, scale=0.35, visible=False)
+
+def onoffm():
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            common.running = False
+            return True
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            if common.music_button.visible and common.music_button.checkforinput(pygame.mouse.get_pos()):
+                common.click.play()
+                common.music_on_off()
+                return False
+            elif common.mute_button.visible and common.mute_button.checkforinput(pygame.mouse.get_pos()):
+                common.click.play()
+                common.music_on_off()
+                return False
+    return False
+
+def updatem(screen):
+    if common.music_button.visible:
+        common.music_button.update(screen)
+    if common.mute_button.visible:
+        common.mute_button.update(screen)
 
 class DraggableItem:
     def __init__(self, x, y, image, correct_gallery):
@@ -96,11 +123,14 @@ class RELICSITEM:
 
         # Drag images
         self.interface_bg = pygame.image.load("Photo used/Match/interfaceview.png")
+        self.start_btn_img = pygame.image.load("Photo used/Match/itemdragstart.png")
         self.envelop_img = pygame.image.load("Photo used/Match/envelop.png")
         self.flower_img = pygame.image.load("Photo used/Match/flower.png")
         self.bonepresent_img = pygame.image.load("Photo used/Match/bonepresent.png")
-        self.start_btn_img = pygame.image.load("Photo used/Match/itemdragstart.png")
-        
+        self.kids_correct_img = pygame.image.load("Photo used/Match/kidscorrect.png")
+        self.boyfriend_correct_img = pygame.image.load("Photo used/Match/boyfriendcorrect.png")
+        self.dogowner_correct_img = pygame.image.load("Photo used/Match/dogownercorrect.png")
+
         # Drag buttons
         self.start_btn = Button(1040, 590, image=self.start_btn_img)
 
@@ -113,15 +143,29 @@ class RELICSITEM:
 
     def draw(self):
         self.screen.blit(self.interface_bg, (0, 0))
-        kidsinter_btn.update(self.screen)
-        boyfriendinter_btn.update(self.screen)
-        dogownerinter_btn.update(self.screen)
+    
+        if not self.items[0].placed_correctly:
+            kidsinter_btn.update(self.screen)
+        else:
+            self.screen.blit(self.kids_correct_img, kidsinter_btn.rect)
+
+        if not self.items[1].placed_correctly:
+            boyfriendinter_btn.update(self.screen)
+        else:
+            self.screen.blit(self.boyfriend_correct_img, boyfriendinter_btn.rect)
+
+        if not self.items[2].placed_correctly:
+            dogownerinter_btn.update(self.screen)
+        else:
+            self.screen.blit(self.dogowner_correct_img, dogownerinter_btn.rect)
+        
         if self.game_started:
             for item in self.items:
                 item.draw(self.screen)
         else:
             self.start_btn.update(self.screen)
         back_btn.update(self.screen)
+
 
     def update(self, event_list):
         self.draw()
@@ -200,6 +244,12 @@ class EmotionGame:
 
         self.hint_btn = Button(screen.get_width() - 150, 50, text_input="HINT", font=common.arcade(30), base_color="Black", hovering_color="Gray")
 
+        self.emotions = {
+            "sad": ["sadness", "The little boy's mother died"],
+            "angry": ["angriness", "Her boyfriend is late without any reason"],
+            "happy": ["happiness", "The dog goes for a walk with its favorite owner"]
+        }
+
     def draw_emotion_buttons(self, screen):
         for emotion, btn in zip(["sad", "angry", "happy"], [self.kidsemo_btn, self.boyfriendemo_btn, self.dogowneremo_btn]):
             if emotion not in self.completed_emotions:
@@ -212,15 +262,12 @@ class EmotionGame:
     def check_emotion_button_click(self, pos):
         if self.kidsemo_btn.checkforinput(pos) and "sad" not in self.completed_emotions:
             self.current_emotion = "sad"
-            print(f"Set current_emotion to: {self.current_emotion}") 
             return True
         elif self.boyfriendemo_btn.checkforinput(pos) and "angry" not in self.completed_emotions:
             self.current_emotion = "angry"
-            print(f"Set current_emotion to: {self.current_emotion}") 
             return True
         elif self.dogowneremo_btn.checkforinput(pos) and "happy" not in self.completed_emotions:
             self.current_emotion = "happy"
-            print(f"Set current_emotion to: {self.current_emotion}") 
             return True
         return False
 
@@ -256,15 +303,16 @@ class EmotionGame:
             self.hint_count += 1
             self.total_hint_count += 1
             if self.hint_count == 1:
-                self.current_hint = f"The answer has {len(self.current_emotion)} letters."
+                self.current_hint = self.emotions[self.current_emotion][1]
             else:
-                self.current_hint = f"The first letter is '{self.current_emotion[0]}'."
+                self.current_hint = f"The first letter is '{self.emotions[self.current_emotion][0][0]}'."
         else:
-            self.current_hint = "No more hints available."
+            self.current_hint = f"No more hints available. You have used {self.total_hint_count} hints in total."
         return self.current_hint
 
     def check_emotion_answer(self, user_input):
-        return user_input.lower().strip() == self.current_emotion.lower().strip()
+        correct_answers = [self.current_emotion, self.emotions[self.current_emotion][0]]
+        return user_input.lower().strip() in [ans.lower() for ans in correct_answers]
     
     def show_message(self, message):
         self.screen.fill((255, 255, 255))
@@ -393,6 +441,14 @@ def match_main():
                     if back_btn.checkforinput(event.pos):
                         current_state = MAIN_MENU
 
+                # Add this block to handle music button clicks
+                if common.music_button.visible and common.music_button.checkforinput(event.pos):
+                    common.click.play()
+                    common.music_on_off()
+                elif common.mute_button.visible and common.mute_button.checkforinput(event.pos):
+                    common.click.play()
+                    common.music_on_off()
+
         if current_state == MAIN_MENU:
             draw_main_menu(screen, drag_game, emotion_game)
         elif current_state == KIDS_VIEW:
@@ -414,15 +470,19 @@ def match_main():
         elif current_state == FINAL_RESULT:
             draw_final_result(screen, emotion_game)
 
+        updatem(screen)
+
         pygame.display.flip()
         clock.tick(60)
 
     pygame.quit()
     sys.exit()
 
+common.music_on_off()
+
 match_main()
 
-#For Debuging Use
+#Debuging Use
 #print(f"Before check: user_text='{self.user_text}', current_emotion='{self.current_emotion}'")
 #print(f"Set current_emotion to: {self.current_emotion}") 
 #print(f"Checking: user input '{user_input}' against '{self.current_emotion}'")
