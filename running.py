@@ -21,7 +21,7 @@ def running_race_game():
     GREEN = (0, 255, 0)
     BLACK = (0, 0, 0)
 
-    dogdog_width, dogdog_height = 90, 80
+    dogdog_width, dogdog_height = 100, 80
     dogdog_x, dogdog_y = 50, 720 - dogdog_height - 20
     dogdog_speed = 25 
 
@@ -37,8 +37,12 @@ def running_race_game():
     dogdog_pic1 = pygame.transform.scale(dogdog_pic1, (dogdog_width, dogdog_height))
     dogdog_pic2 = pygame.image.load("sayyunasset/running_race/dog_2.png")
     dogdog_pic2 = pygame.transform.scale(dogdog_pic2, (dogdog_width, dogdog_height))
+    dogdogswim_pic1 = pygame.image.load("sayyunasset/running_race/dogswim_1.png")
+    dogdogswim_pic1 = pygame.transform.scale(dogdogswim_pic1, (dogdog_width, dogdog_height))
+    dogdogswim_pic2 = pygame.image.load("sayyunasset/running_race/dogswim_2.png")
+    dogdogswim_pic2 = pygame.transform.scale(dogdogswim_pic2, (dogdog_width, dogdog_height))
     current_dog_pic = dogdog_pic1
-    obstacle_pic = pygame.image.load("sayyunasset/running_race/obstacle_1.png")
+    obstacle_pic = pygame.image.load("sayyunasset/running_race/obstacleswim.png")
     obstacle_pic = pygame.transform.scale(obstacle_pic, (obstacle_1280, obstacle_height))
     win_pic = pygame.image.load("sayyunasset/running_race/end_1.png")
     win_pic = pygame.transform.scale(win_pic, (1280, 720))
@@ -59,13 +63,15 @@ def running_race_game():
             if not obstacles or abs(obstacle_y - obstacles[-1].y) > vertical_spacing:
                 break
         return pygame.Rect(x, obstacle_y, obstacle_1280, obstacle_height)
+   
     # Generate initial obstacles
     last_x = 1280
-    for _ in range(15):
+    for _ in range(12):
         last_x += random.randint(obstacle_spacing, obstacle_spacing * 2)
         obstacles.append(create_obstacle(last_x))
 
-    finishline = 1280 - 100
+    finishline = 1280 - 110
+    left_line_x = 150
 
     font = pygame.font.SysFont(None, 48)
 
@@ -79,13 +85,21 @@ def running_race_game():
     # Animation toggle
     frame_toggle = True
 
+
     while running and lives > 0:
         screen.blit(background_pic, (0, 0))
 
         time_left = time_limit - (time.time() - start_time)
         if time_left <= 0:
             time_left = 0
-            running = False
+            lives -= 1 
+            dogdog_x, dogdog_y = 50, 720 - dogdog_height - 20 
+            obstacles.clear() 
+            last_x = 1280
+            for _ in range(12):
+                last_x += random.randint(obstacle_spacing, obstacle_spacing * 2)
+                obstacles.append(create_obstacle(last_x))
+            start_time = time.time()
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -101,10 +115,17 @@ def running_race_game():
                 if event.key == pygame.K_DOWN or event.key == pygame.K_s:
                     dogdog_y += dogdog_speed
 
-                if frame_toggle:
-                    current_dog_pic = dogdog_pic2
+                if dogdog_x < left_line_x:
+                    if frame_toggle:
+                        current_dog_pic = dogdog_pic1 
+                    else:
+                        current_dog_pic = dogdog_pic2
                 else:
-                    current_dog_pic = dogdog_pic1
+                    if frame_toggle:
+                        current_dog_pic = dogdogswim_pic1
+                    else:
+                        current_dog_pic = dogdogswim_pic2
+
                 frame_toggle = not frame_toggle
 
         dogdog_x = max(0, min(dogdog_x, 1280 - dogdog_width))
@@ -115,11 +136,13 @@ def running_race_game():
 
         dogdog_mask = pygame.mask.from_surface(current_dog_pic)
 
+        pygame.draw.line(screen, BLACK, (left_line_x, 0), (left_line_x, SCREEN_HEIGHT), 5)
+
         for obstacle in obstacles:
             obstacle.x -= obstacle_speed
-            if obstacle.x < -obstacle_1280:
+            if obstacle.x <= left_line_x:
                 obstacles.remove(obstacle)
-                new_obstacle_x = 1280 + obstacle_1280
+                new_obstacle_x = finishline
                 obstacles.append(create_obstacle(new_obstacle_x))
 
             screen.blit(obstacle_pic, obstacle.topleft)
@@ -132,8 +155,8 @@ def running_race_game():
                 lives -= 1 
                 dogdog_x, dogdog_y = 50, 720 - dogdog_height - 20 
                 obstacles.clear() 
-                last_x = 1280
-                for _ in range(15):
+                last_x = finishline
+                for _ in range(12):
                     last_x += random.randint(obstacle_spacing, obstacle_spacing * 2)
                     obstacles.append(create_obstacle(last_x))
                 start_time = time.time()
