@@ -136,7 +136,7 @@ def running_race_game():
 
         dogdog_mask = pygame.mask.from_surface(current_dog_pic)
 
-        pygame.draw.line(screen, BLACK, (left_line_x, 0), (left_line_x, SCREEN_HEIGHT), 5)
+        # pygame.draw.line(screen, (255, 255, 255), (left_line_x, 0), (left_line_x, SCREEN_HEIGHT), 5)
 
         for obstacle in obstacles:
             obstacle.x -= obstacle_speed
@@ -161,7 +161,7 @@ def running_race_game():
                     obstacles.append(create_obstacle(last_x))
                 start_time = time.time()
 
-        pygame.draw.line(screen, BLACK, (finishline, 0), (finishline, 720), 5)
+        # pygame.draw.line(screen, BLACK, (finishline, 0), (finishline, 720), 5)
 
         timer_text = font.render(f"Time Left: {int(time_left)}s", True, BROWN)
         lives_text = font.render(f"Lives: {lives}", True, BROWN)
