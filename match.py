@@ -137,8 +137,8 @@ class RELICSITEM:
         # Draggable items
         self.items = [
             DraggableItem(940, 610, self.envelop_img, kidsinter_btn),
-            DraggableItem(240, 590, self.flower_img, boyfriendinter_btn),
-            DraggableItem(540, 585, self.bonepresent_img, dogownerinter_btn)
+            DraggableItem(240, 600, self.flower_img, boyfriendinter_btn),
+            DraggableItem(540, 600, self.bonepresent_img, dogownerinter_btn)
         ]
 
     def draw(self):
@@ -196,7 +196,8 @@ class RELICSITEM:
 
             self.all_items_placed = all(item.placed_correctly for item in self.items)
             if self.all_items_placed:
-                self.show_message("All items placed correctly!")
+                self.show_message("All relics give back to the owner and all of them become happy!")
+                pygame.time.wait(2000)
                 return "MAIN_MENU"
 
         return None
@@ -240,15 +241,15 @@ class EmotionGame:
         self.kidsemo_btn = Button(260, 400, image=self.kidsemo_img)
         self.boyfriendemo_btn = Button(646, 400, image=self.boyfriendemo_img)
         self.dogowneremo_btn = Button(1040, 400, image=self.dogowneremo_img)
-        self.hint_btn = Button(1200, 50, image=self.hint_img, scale=0.8)
+        self.hint_btn = Button(1200, 55, image=self.hint_img, scale=0.8)
         self.hint_text = f"HINT x{self.total_hint_count}"
 
         self.music_btn = None
 
         self.emotions = {
-            "sad": ["sadness", "The little boy mother died"],
-            "angry": ["angriness", "Her boyfriend is late without any reason"],
-            "happy": ["happiness", "The dog goes for a walk with its favorite owner"]
+            "sad": ["sadness", "The little boy's mother died."],
+            "angry": ["angriness", "Her boyfriend is late without any reason."],
+            "happy": ["happiness", "The dog goes for a walk with its favorite owner."]
         }
 
         self.emotion_hint_count = {
@@ -290,10 +291,10 @@ class EmotionGame:
             self.hint_btn.update(self.screen)
             
             # Display hint count
-            hint_count_text, hint_count_rect = common.normal_text(self.hint_text, common.cutedisplay(20), (0, 0, 0), (1200, 100))
+            hint_count_text, hint_count_rect = common.normal_text(self.hint_text, common.cutedisplay(20), (0, 0, 0), (1200, 110))
             self.screen.blit(hint_count_text, hint_count_rect)
         
-        question_text, question_rect = common.normal_text("What is the emotion shown by this gallery", common.cutedisplay(30), (0, 0, 0), (self.screen.get_width() // 2, 200))
+        question_text, question_rect = common.normal_text("What is the emotion shown by this gallery?", common.cutedisplay(30), (0, 0, 0), (self.screen.get_width() // 2, 240))
         self.screen.blit(question_text, question_rect)
 
         color = self.color_active if self.active else self.color_passive
@@ -329,7 +330,7 @@ class EmotionGame:
             self.hint_text = f"HINT x{self.total_hint_count}"
             return self.current_hint
         else:
-            self.current_hint = "No more hints available"
+            self.current_hint = "No more hints available."
             return self.current_hint
 
     def check_emotion_answer(self, user_input):
@@ -439,7 +440,7 @@ def draw_final_result(screen, emotion_game):
     if len(emotion_game.completed_emotions) == 3:
         result_text = "You have learned human emotions!"
     else:
-        result_text = "You did not learn human emotions"
+        result_text = "You did not learn human emotions!"
     text, text_rect = common.normal_text(result_text, common.cutedisplay(60), (0, 0, 0), (SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2))
     screen.blit(text, text_rect)
 
@@ -513,9 +514,8 @@ def match_main():
     pygame.quit()
     sys.exit()
 
-common.music_playing = True  # Set music to be on initially
-pygame.mixer.music.play(-1)  # Start playing music on loop
-
+common.music_playing = True
+pygame.mixer.music.play(-1)  
 match_main()
 
 #Debuging Use
