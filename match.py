@@ -203,7 +203,7 @@ class RELICSITEM:
 
     def show_message(self, message):
         self.screen.fill((255, 255, 255))
-        text, text_rect = common.normal_text(message, common.arcade(30), (0, 0, 0), (self.screen.get_width() // 2, self.screen.get_height() // 2))
+        text, text_rect = common.normal_text(message, common.cutedisplay(30), (0, 0, 0), (self.screen.get_width() // 2, self.screen.get_height() // 2))
         self.screen.blit(text, text_rect)
         pygame.display.flip()
         pygame.time.wait(2000)
@@ -221,28 +221,28 @@ class EmotionGame:
         self.screen = screen
         self.current_emotion = ""
         self.user_text = ""
-        self.hint_count = 2  # Start with 2 hints
+        self.total_hint_count = 2
         self.wrong_answers = 0
         self.completed_emotions = set()
         self.active = False
-        self.input_rect = pygame.Rect(screen.get_width() // 2 - 70, 300, 140, 32)
+        self.input_rect = pygame.Rect(screen.get_width() // 2 - 70, 300, 140, 52)
         self.color_active = pygame.Color('lightskyblue3')
         self.color_passive = pygame.Color('gray15')
-        self.font = common.arcade(32)
+        self.font = common.cutedisplay(32)
         
         # Emotion images
         self.kidsemo_img = pygame.image.load("Photo used/Match/emozuo.png")
         self.boyfriendemo_img = pygame.image.load("Photo used/Match/emozhong.png")
         self.dogowneremo_img = pygame.image.load("Photo used/Match/emoyou.png")
+        self.hint_img = pygame.image.load("Photo used/Match/hint.png")
 
         # Emotion buttons
         self.kidsemo_btn = Button(260, 400, image=self.kidsemo_img)
         self.boyfriendemo_btn = Button(646, 400, image=self.boyfriendemo_img)
         self.dogowneremo_btn = Button(1040, 400, image=self.dogowneremo_img)
+        self.hint_btn = Button(1200, 50, image=self.hint_img, scale=0.8)
+        self.hint_text = f"HINT x{self.total_hint_count}"
 
-        # Hints chance and button
-        self.total_hint_count = 2  # Start with 2 hints
-        self.hint_btn = Button(1160,50 , text_input=f"HINT x{self.total_hint_count}", font=common.arcade(30), base_color="Black", hovering_color="Gray")
         self.music_btn = None
 
         self.emotions = {
@@ -264,7 +264,7 @@ class EmotionGame:
                 btn.update(screen)
             else:
                 pygame.draw.rect(screen, (255, 255, 255), btn.rect)
-                text, text_rect = common.normal_text(emotion.capitalize(), common.arcade(30), (0, 0, 0), btn.rect.center)
+                text, text_rect = common.normal_text(emotion.capitalize(), common.cutedisplay(30), (0, 0, 0), btn.rect.center)
                 screen.blit(text, text_rect)
 
     def check_emotion_button_click(self, pos):
@@ -286,11 +286,14 @@ class EmotionGame:
         self.screen.fill((255, 255, 255))
         back_btn.update(self.screen)
         
-        hint_text = f"HINT x{self.total_hint_count}"
-        self.hint_btn = Button(1160,50 , text_input=f"HINT x{self.total_hint_count}", font=common.arcade(30), base_color="Black", hovering_color="Gray")
-        self.hint_btn.update(self.screen)
+        if self.total_hint_count > 0:
+            self.hint_btn.update(self.screen)
+            
+            # Display hint count
+            hint_count_text, hint_count_rect = common.normal_text(self.hint_text, common.cutedisplay(20), (0, 0, 0), (1200, 100))
+            self.screen.blit(hint_count_text, hint_count_rect)
         
-        question_text, question_rect = common.normal_text("What is the emotion shown by this gallery", common.arcade(30), (0, 0, 0), (self.screen.get_width() // 2, 200))
+        question_text, question_rect = common.normal_text("What is the emotion shown by this gallery", common.cutedisplay(30), (0, 0, 0), (self.screen.get_width() // 2, 200))
         self.screen.blit(question_text, question_rect)
 
         color = self.color_active if self.active else self.color_passive
@@ -302,21 +305,15 @@ class EmotionGame:
         self.input_rect.w = max(140, text_surface.get_width() + 10)
 
         if self.current_hint:
-            hint_text, hint_rect = common.normal_text(self.current_hint, common.arcade(24), (0, 0, 0), (self.screen.get_width() // 2, 400))
+            hint_text, hint_rect = common.normal_text(self.current_hint, common.cutedisplay(24), (0, 0, 0), (self.screen.get_width() // 2, 400))
             self.screen.blit(hint_text, hint_rect)
 
     def draw_emotion_result(self, result):
         self.screen.fill((255, 255, 255))
-        result_text, result_rect = common.normal_text(result, common.arcade(50), (0, 0, 0), (self.screen.get_width() // 2, self.screen.get_height() // 2 - 50))
-        emotion_text, emotion_rect = common.normal_text(f"The emotion was: {self.current_emotion}", common.arcade(30), (0, 0, 0), (self.screen.get_width() // 2, self.screen.get_height() // 2 + 50))
+        result_text, result_rect = common.normal_text(result, common.cutedisplay(50), (0, 0, 0), (self.screen.get_width() // 2, self.screen.get_height() // 2 - 50))
+        emotion_text, emotion_rect = common.normal_text(f"The emotion was: {self.current_emotion}", common.cutedisplay(30), (0, 0, 0), (self.screen.get_width() // 2, self.screen.get_height() // 2 + 50))
         self.screen.blit(result_text, result_rect)
         self.screen.blit(emotion_text, emotion_rect)
-
-    def update_music_button(self):
-        if common.music_button.visible:
-            self.music_button = common.music_button
-        else:
-            self.music_button = common.mute_button
 
     def get_hint(self):
         if self.total_hint_count > 0:
@@ -328,13 +325,11 @@ class EmotionGame:
             else:
                 self.current_hint = f"The first letter is '{self.emotions[self.current_emotion][0][0]}'."
             
-            # Update hint button text
-            self.hint_btn.text_input = f"HINT x{self.total_hint_count}"
+            # Update hint text
+            self.hint_text = f"HINT x{self.total_hint_count}"
             return self.current_hint
         else:
             self.current_hint = "No more hints available"
-            self.hint_btn.text_input = "No more hints"
-            self.hint_btn.visible = False
             return self.current_hint
 
     def check_emotion_answer(self, user_input):
@@ -352,7 +347,7 @@ class EmotionGame:
         
     def show_message(self, message):
         self.screen.fill((255, 255, 255))
-        text, text_rect = common.normal_text(message, common.arcade(30), (0, 0, 0), (self.screen.get_width() // 2, self.screen.get_height() // 2))
+        text, text_rect = common.normal_text(message, common.cutedisplay(30), (0, 0, 0), (self.screen.get_width() // 2, self.screen.get_height() // 2))
         self.screen.blit(text, text_rect)
         pygame.display.flip()
         pygame.time.wait(500)
@@ -366,21 +361,11 @@ class EmotionGame:
                     self.active = True
                 else:
                     self.active = False
-                if self.hint_btn.checkforinput(event.pos):
-                    common.click.play()
+                if self.total_hint_count > 0 and self.hint_btn.checkforinput(event.pos):
                     self.current_hint = self.get_hint()
                 if back_btn.checkforinput(event.pos):
                     return "MAIN_MENU"
-                if common.music_button.visible and common.music_button.checkforinput(pygame.mouse.get_pos()):
-                    if event.type == pygame.MOUSEBUTTONDOWN:
-                        common.click.play()
-                        common.music_on_off()
-                elif common.mute_button.visible and common.mute_button.checkforinput(pygame.mouse.get_pos()):
-                    if event.type == pygame.MOUSEBUTTONDOWN:
-                        common.click.play()
-                        common.music_on_off()
-
-
+               
             if event.type == pygame.KEYDOWN:
                 if self.active:
                     if event.key == pygame.K_RETURN:
@@ -408,13 +393,6 @@ class EmotionGame:
         pygame.display.flip()
         return None
 
-    
-    def update_music_button(self):
-        if common.music_button.visible:
-            self.music_btn = common.music_button
-        else:
-            self.music_btn = common.mute_button
-
     def draw_input_box(self):
         color = self.color_active if self.active else self.color_passive
         pygame.draw.rect(self.screen, color, self.input_rect, 2)
@@ -430,8 +408,7 @@ class EmotionGame:
     def reset(self):
         self.user_text = ""
         self.total_hint_count = 2
-        self.hint_btn.text_input = f"HINT x{self.total_hint_count}"
-        self.hint_btn.visible = True
+        self.hint_text = f"HINT x{self.total_hint_count}"
         self.wrong_answers = 0
         self.completed_emotions = set()
         self.current_hint = ""
@@ -463,7 +440,7 @@ def draw_final_result(screen, emotion_game):
         result_text = "You have learned human emotions!"
     else:
         result_text = "You did not learn human emotions"
-    text, text_rect = common.normal_text(result_text, common.arcade(60), (0, 0, 0), (SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2))
+    text, text_rect = common.normal_text(result_text, common.cutedisplay(60), (0, 0, 0), (SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2))
     screen.blit(text, text_rect)
 
 def match_main():
@@ -498,12 +475,11 @@ def match_main():
                     if back_btn.checkforinput(event.pos):
                         current_state = MAIN_MENU
 
-                if common.music_button.visible and common.music_button.checkforinput(pygame.mouse.get_pos()):
-                    if event.type == pygame.MOUSEBUTTONDOWN:
+                if current_state != EMOTION_GAME:
+                    if common.music_button.visible and common.music_button.checkforinput(pygame.mouse.get_pos()):
                         common.click.play()
                         common.music_on_off()
-                elif common.mute_button.visible and common.mute_button.checkforinput(pygame.mouse.get_pos()):
-                    if event.type == pygame.MOUSEBUTTONDOWN:
+                    elif common.mute_button.visible and common.mute_button.checkforinput(pygame.mouse.get_pos()):
                         common.click.play()
                         common.music_on_off()
 
@@ -537,7 +513,8 @@ def match_main():
     pygame.quit()
     sys.exit()
 
-common.music_on_off()
+common.music_playing = True  # Set music to be on initially
+pygame.mixer.music.play(-1)  # Start playing music on loop
 
 match_main()
 
