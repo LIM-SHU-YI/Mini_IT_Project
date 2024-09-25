@@ -66,7 +66,7 @@ def love_interaction():
     mouse_press = False  
     out_area = False 
 
-    font = pygame.font.Font(None, 36) 
+    font = pygame.font.Font("kitasset/part2/font.ttf", 36) 
     instruction_text = ""
     start_time = pygame.time.get_ticks()  
     time_limit = 20000  

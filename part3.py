@@ -18,11 +18,6 @@ p1_c = pygame.image.load("asset/image/part3/3.png")
 p1_d = pygame.image.load("asset/image/part3/4.png")
 p1_e = pygame.image.load("asset/image/part3/4b.png")
 p1_f = pygame.image.load("asset/image/part3/5.png")
-p1_g = pygame.image.load("asset/image/part3/s1.png")
-p1_h = pygame.image.load("asset/image/part3/s2.png")
-p1_i = pygame.image.load("asset/image/part3/s3.png")
-p1_j = pygame.image.load("asset/image/part3/s4.png")
-p1_k = pygame.image.load("asset/image/part3/s5.png")
 
 
 def onoffm():
@@ -49,6 +44,42 @@ def updatem():
 
     pygame.display.flip()
 
+
+def display_text_centered(screen, text, font, color):
+    text_surface = font.render(text, True, color)
+    text_rect = text_surface.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2))
+    
+    screen.blit(text_surface, text_rect)
+
+def text_slide_sequence():
+    font = pygame.font.Font("kitasset/part2/font.ttf", 41) 
+    text_slides = [
+        "Guided by Death, ",
+        "Hachi found its owner at the station in the other world.",
+        "Hachi fulfilled its final wish.",
+        "Their souls ascended, reunited for eternity.",
+        "Though Death had witnessed countless farewells and sorrow,",
+        "This journey made him reflect on life's meaning and the power of love.",
+        "As Hachi and its owner vanished into the light, the street grew still.",
+        "A cardboard box on the street gently swayed in the breeze,",
+        "Bringing this story to a quiet, tender close."
+    ]
+    
+    slide_duration = 3000
+    
+    for text in text_slides:
+        start_time = pygame.time.get_ticks()
+        while common.running:
+            screen.fill((0, 0, 0)) 
+            display_text_centered(screen, text, font, (255, 255, 255))  # Display the text
+            pygame.display.flip()
+
+            current_time = pygame.time.get_ticks()
+            elapsed_time = current_time - start_time
+
+            if elapsed_time >= slide_duration:
+                break  
+
 def first_scene():
     clock = pygame.time.Clock()
     common.running = True
@@ -58,12 +89,7 @@ def first_scene():
         {"image": p1_c, "fade_in": 1000, "display": 1000, "fade_out": 1000},
         {"image": p1_d, "fade_in": 1000, "display": 1000, "fade_out": 1000},
         {"image": p1_e, "fade_in": 1000, "display": 1000, "fade_out": 1000},
-        {"image": p1_f, "fade_in": 1000, "display": 1000, "fade_out": 1000},
-        {"image": p1_g, "fade_in": 1000, "display": 1000, "fade_out": 1000},
-        {"image": p1_h, "fade_in": 1000, "display": 1000, "fade_out": 1000},
-        {"image": p1_i, "fade_in": 1000, "display": 1000, "fade_out": 1000},
-        {"image": p1_j, "fade_in": 1000, "display": 1000, "fade_out": 1000},
-        {"image": p1_k, "fade_in": 1000, "display": 1000, "fade_out": 1000}     
+        {"image": p1_f, "fade_in": 1000, "display": 1000, "fade_out": 1000}  
     ]
 
         
@@ -93,6 +119,9 @@ def first_scene():
 
             pygame.time.wait(100)
 
+    if common.running:
+        text_slide_sequence()
+
         # if index == 2:  #dic start from 0
         #     clock_main_loop()  # Call minigame here
         #     # The code will return here after the minigame finishes
@@ -107,9 +136,9 @@ def first_scene():
 
 
 # # ONLY FOR DEBUGG!!! DO NOT RUN THIS WHEN RUN FROM MAINNNN!!!
-while common.running:
-    first_scene()
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            common.running = False
-            break
+# while common.running:
+#     first_scene()
+#     for event in pygame.event.get():
+#         if event.type == pygame.QUIT:
+#             common.running = False
+#             break
