@@ -17,9 +17,13 @@ p1_b = pygame.image.load("asset/image/part3/2.png")
 p1_c = pygame.image.load("asset/image/part3/3.png")
 p1_d = pygame.image.load("asset/image/part3/4.png")
 p1_e = pygame.image.load("asset/image/part3/4b.png")
-p1_f = pygame.image.load("asset/image/part3/6.png")
-p1_g = pygame.image.load("asset/image/part3/7.png")
-p1_h = pygame.image.load("asset/image/part3/8.png")
+p1_f = pygame.image.load("asset/image/part3/5.png")
+p1_g = pygame.image.load("asset/image/part3/s1.png")
+p1_h = pygame.image.load("asset/image/part3/s2.png")
+p1_i = pygame.image.load("asset/image/part3/s3.png")
+p1_j = pygame.image.load("asset/image/part3/s4.png")
+p1_k = pygame.image.load("asset/image/part3/s5.png")
+
 
 def onoffm():
     for event in pygame.event.get():
@@ -56,8 +60,12 @@ def first_scene():
         {"image": p1_e, "fade_in": 1000, "display": 1000, "fade_out": 1000},
         {"image": p1_f, "fade_in": 1000, "display": 1000, "fade_out": 1000},
         {"image": p1_g, "fade_in": 1000, "display": 1000, "fade_out": 1000},
-        {"image": p1_h, "fade_in": 1000, "display": 1000, "fade_out": 1000}
+        {"image": p1_h, "fade_in": 1000, "display": 1000, "fade_out": 1000},
+        {"image": p1_i, "fade_in": 1000, "display": 1000, "fade_out": 1000},
+        {"image": p1_j, "fade_in": 1000, "display": 1000, "fade_out": 1000},
+        {"image": p1_k, "fade_in": 1000, "display": 1000, "fade_out": 1000}     
     ]
+
         
     for index, scene in enumerate(scenes):
         if not common.running:
@@ -99,9 +107,9 @@ def first_scene():
 
 
 # # ONLY FOR DEBUGG!!! DO NOT RUN THIS WHEN RUN FROM MAINNNN!!!
-# while common.running:
-#     first_scene()
-#     for event in pygame.event.get():
-#         if event.type == pygame.QUIT:
-#             common.running = False
-#             break
+while common.running:
+    first_scene()
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            common.running = False
+            break
