@@ -89,7 +89,7 @@ def drawtext(screen,text,font,colour,x,y):
 
 def displaystory():
     starttime=pygame.time.get_ticks()
-    displayduration=5000
+    displayduration=20000
 
     while True:
         elapsedtime=pygame.time.get_ticks()-starttime
@@ -106,7 +106,7 @@ def displaystory():
         clock.tick(60)
 def displaystory2():
     starttime=pygame.time.get_ticks()
-    displayduration=5000
+    displayduration=20000
 
     while True:
         elapsedtime=pygame.time.get_ticks()-starttime
@@ -121,7 +121,7 @@ def displaystory2():
                 common.running=False
                 return
         clock.tick(60)
-def fadetransition(screen,img1,img2,duration=1500):
+def fadetransition(screen,img1,img2,duration=10000):
     starttime=pygame.time.get_ticks()
     fadeduration=duration
     while True:
@@ -146,7 +146,7 @@ def fadetransition(screen,img1,img2,duration=1500):
 
 def infront():
     displaystory()
-    fadetransition(screen,firstimg,secondimg,duration=3000)
+    fadetransition(screen,firstimg,secondimg,duration=10000)
     displaystory2()
 
 def checkmdone():
@@ -241,10 +241,9 @@ def kitinterface():
     pygame.quit()
 
 # ONLY FOR DEBUGG!!! DO NOT RUN THIS WHEN RUN FROM MAINNNN!!!
-# while common.running:
-#     infront()
-#     kitinterface()
-#     for event in pygame.event.get():
-#         if event.type == pygame.QUIT:
-#             common.running = False
-#             break
+while common.running:
+    kitinterface()
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            common.running = False
+            break
