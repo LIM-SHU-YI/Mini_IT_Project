@@ -15,12 +15,6 @@ screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 def storytella(size):
     return pygame.font.Font("asset/font/Storytella.otf", size)
 
-def monera(size):
-    return pygame.font.Font("asset/font/Monera Calm.otf", size)
-
-def playfair(size):
-    return pygame.font.Font("asset/font/PlayfairDisplaySC-Regular.ttf", size)
-
 def arcade(size):
     return pygame.font.Font("asset/font/arcadeclassic.ttf", size)
 
@@ -72,8 +66,12 @@ def music_on_off():
         mute_button.visible = False
         return music_button
     
-# clicking sound effect
+# sound effects
 click = pygame.mixer.Sound("asset/songs/click.mp3")
+huh = pygame.mixer.Sound("asset/songs/huh.mp3")
+huh.set_volume(0.35)
+hahaha = pygame.mixer.Sound("asset/songs/hahaha.mp3")
+sopro = pygame.mixer.Sound("asset/songs/sopro.mp3")
 
 
 def fade_in(screen, surface, duration=2000):

@@ -35,7 +35,8 @@ message = ""
 show_message = False
 message_timer = 0
  
-font = common.arcade(36)
+fonts = common.arcade(36)
+font = common.cutedisplay(46)
 return_img = pygame.image.load("asset/image/return.png")
 return_button = Button(50, 50, image=return_img, scale=0.27)
 game_completed = False
@@ -74,7 +75,7 @@ def draw_scene(surface, hour_angle, minute_angle, zoom_factor, draw_clock=True):
             angle = math.radians(i * 30 - 90)
             x = CENTER[0] + int((RADIUS - 20) * math.cos(angle))
             y = CENTER[1] + int((RADIUS - 20) * math.sin(angle))
-            number = font.render(str(i), True, (255, 255, 255))
+            number = fonts.render(str(i), True, (255, 255, 255))
             number_rect = number.get_rect(center=(x, y))
             surface.blit(number, number_rect)
 

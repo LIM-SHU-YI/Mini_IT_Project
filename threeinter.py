@@ -6,6 +6,7 @@ from puzzle import puzzle
 from bone import bone
 from diary import diary
 
+pygame.init()
 # settings for the window of the game
 SCREEN_WIDTH = 1280
 SCREEN_HEIGHT = 720
@@ -89,42 +90,49 @@ def drawtext(screen,text,font,colour,x,y):
 
 def displaystory():
     starttime=pygame.time.get_ticks()
-    displayduration=20000
-
-    while True:
+    displayduration=15000
+    run = True 
+    while run:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                common.running = False
+                run = False
         elapsedtime=pygame.time.get_ticks()-starttime
         screen.fill((0,0,0))
         drawtext(screen,storytext1,font,(255,255,255),50,50)
         pygame.display.flip()
 
         if elapsedtime >= displayduration:
-            break
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                common.running=False
-                return
+            run = False
         clock.tick(60)
+
 def displaystory2():
     starttime=pygame.time.get_ticks()
-    displayduration=20000
-
-    while True:
+    displayduration=10000
+    run = True 
+    while run:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                common.running = False
+                run = False
         elapsedtime=pygame.time.get_ticks()-starttime
         screen.fill((0,0,0))
         drawtext(screen,storytext2,font,(255,255,255),50,50)
         pygame.display.flip()
 
         if elapsedtime >= displayduration:
-            break
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                common.running=False
-                return
+            run = False
         clock.tick(60)
+
 def fadetransition(screen,img1,img2,duration=10000):
     starttime=pygame.time.get_ticks()
     fadeduration=duration
-    while True:
+    run = True
+    while run:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                common.running = False
+                run = False
         elapsedtime=pygame.time.get_ticks()-starttime
         alpha=(elapsedtime/fadeduration)*255
         img1copy=img1.copy()
@@ -137,17 +145,19 @@ def fadetransition(screen,img1,img2,duration=10000):
         pygame.display.flip()
 
         if elapsedtime >= fadeduration:
-            break
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                common.running=False
-                return
+            run = False
         clock.tick(60)
 
 def infront():
     displaystory()
+    if not common.running:
+        pygame.quit()
     fadetransition(screen,firstimg,secondimg,duration=10000)
+    if not common.running:
+        pygame.quit()
     displaystory2()
+    if not common.running:
+        pygame.quit()
 
 def checkmdone():
     return all(completed_games.values())
@@ -241,9 +251,9 @@ def kitinterface():
     pygame.quit()
 
 # ONLY FOR DEBUGG!!! DO NOT RUN THIS WHEN RUN FROM MAINNNN!!!
-while common.running:
-    kitinterface()
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            common.running = False
-            break
+# while common.running:
+#     kitinterface()
+#     for event in pygame.event.get():
+#         if event.type == pygame.QUIT:
+#             common.running = False
+#             break

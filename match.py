@@ -1,3 +1,5 @@
+# Modifications for match.py
+
 import pygame
 import sys
 import ctypes
@@ -5,6 +7,7 @@ import common
 from button import Button
 
 pygame.init()
+
 SCREEN_WIDTH = 1280
 SCREEN_HEIGHT = 720
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
@@ -12,11 +15,11 @@ pygame.display.set_caption("Memories")
 icon = pygame.image.load("asset/image/gameicon.png")
 pygame.display.set_icon(icon)
 
-#Initialize for improved text input
-ctypes.windll.user32.SetProcessDPIAware()
-ctypes.windll.imm32.ImmDisableIME(0)
+# Initialize for improved text input
+# ctypes.windll.user32.SetProcessDPIAware()
+# ctypes.windll.imm32.ImmDisableIME(0)
 
-#Game states
+# Game states
 MAIN_MENU = 0
 KIDS_VIEW = 1
 BOYFRIEND_VIEW = 2
@@ -25,7 +28,7 @@ DRAG_GAME = 4
 EMOTION_GAME = 5
 FINAL_RESULT = 6
 
-#Interface images
+# Interface images
 interface_bg = pygame.image.load("Photo used/Match/interfaceview.png")
 kidsinter_img = pygame.image.load("Photo used/Match/kidsinter.png")
 kids_img = pygame.image.load("Photo used/Match/kids.png")
@@ -37,11 +40,11 @@ back_img = pygame.image.load("asset/image/return.png")
 music_img = pygame.image.load("asset/image/m.png")
 mute_img = pygame.image.load("asset/image/mm.png")
 
-#Interface buttons
+# Interface buttons
 kidsinter_btn = Button(260, 245, image=kidsinter_img)
 boyfriendinter_btn = Button(646, 236, image=boyfriendinter_img)
 dogownerinter_btn = Button(1040, 236, image=dogownerinter_img)
-back_btn = Button(50, 50, image=back_img,scale=0.27)
+back_btn = Button(50, 50, image=back_img, scale=0.27)
 music_button = Button(1230, 50, image=music_img, scale=0.35)
 mute_button = Button(1230, 50, image=mute_img, scale=0.35, visible=False)
 
@@ -515,8 +518,8 @@ def match_main():
     sys.exit()
 
 common.music_playing = True
-pygame.mixer.music.play(-1)  
-match_main()
+pygame.mixer.music.play(-1) 
+# match_main()
 
 #Debuging Use
 #print(f"Before check: user_text='{self.user_text}', current_emotion='{self.current_emotion}'")

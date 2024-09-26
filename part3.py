@@ -1,6 +1,7 @@
 import pygame
 import common
 from clock import clock_main_loop
+import match
 
 
 # settings for the window of the game
@@ -121,16 +122,21 @@ def first_scene():
 
     if common.running:
         text_slide_sequence()
+        pygame.display.flip()
 
-        # if index == 2:  #dic start from 0
-        #     clock_main_loop()  # Call minigame here
-        #     # The code will return here after the minigame finishes
-        #     if not common.running:
-        #         break
+        start_time = pygame.time.get_ticks()
+        while common.running:
+            current_time = pygame.time.get_ticks()
+            elapsed_time = current_time - start_time
+            if elapsed_time >= 2000:
+                match.match_main()
+                break
 
-    # if common.running:
-    #     from love import love_interaction
-    #     love_interaction()
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    common.running = False
+                    return
+            pygame.time.wait(100)
 
     pygame.quit()
 

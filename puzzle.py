@@ -148,7 +148,7 @@ def puzzle():
 
     # timer
     starttime=pygame.time.get_ticks()
-    timer=1*60*1000+31*1000
+    timer=1*60*1000+46*1000
     # timer=5*1000 #change when use for debug
     
 
