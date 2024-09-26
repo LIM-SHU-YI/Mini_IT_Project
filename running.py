@@ -6,6 +6,8 @@ def running_race_game():
     import time
     import random
     from button import Button
+    import part3
+    import common
     pygame.init()
 
     SCREEN_WIDTH = 1280
@@ -78,12 +80,14 @@ def running_race_game():
     time_limit = 20  
     start_time = time.time()
 
-    lives = 2
+    lives = 3
     running = True
     dogdog_win = False
 
     # Animation toggle
     frame_toggle = True
+
+    no_return = False
 
 
     while running and lives > 0:
@@ -177,9 +181,16 @@ def running_race_game():
 
     screen.blit(background_pic, (0, 0))
     if dogdog_win:
+        no_return = False
         screen.blit(win_pic, (0, 0))
+        common.sopro.play()
         endtxt = font.render("You Win!", True, GREEN)
+        return_button.update(screen)
+        pygame.display.flip()
+
     else:
+        no_return = True
+        common.hahaha.play()
         screen.blit(lose_pic1, (0, 0))
         pygame.display.flip()
         pygame.time.delay(1000)
@@ -187,18 +198,23 @@ def running_race_game():
         endtxt = font.render("YOU LOSE!", True, RED)
 
     screen.blit(endtxt, (1280 // 2 - 100, 720 // 2))
-    return_button.update(screen)
     pygame.display.flip()
 
     waiting = True
     while waiting:
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                waiting = False
-            elif event.type == pygame.MOUSEBUTTONDOWN:
-                if event.button == 1:
-                    if return_button.is_clicked(event.pos):
-                        waiting = False
+        if no_return:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    waiting = False
+        else:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    waiting = False
+                elif event.type == pygame.MOUSEBUTTONDOWN:
+                    if event.button == 1:
+                        if return_button.checkforinput(event.pos):
+                            part3.first_scene()
+                            waiting = False
 
     pygame.quit()
     sys.exit()

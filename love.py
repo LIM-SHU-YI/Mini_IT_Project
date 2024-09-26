@@ -2,6 +2,7 @@ import pygame
 from button import Button
 import part2
 import part2b
+import common
 
 def love_interaction():
     import sys
@@ -45,6 +46,24 @@ def love_interaction():
         ((1280 -548) // 2, (720 - 533) // 2)
     ]
 
+    def onoffm():
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            if common.music_button.visible and common.music_button.checkforinput(pygame.mouse.get_pos()):
+                common.click.play()
+                common.music_on_off()
+                return False
+            elif common.mute_button.visible and common.mute_button.checkforinput(pygame.mouse.get_pos()):
+                common.click.play()
+                common.music_on_off()
+                return False
+
+    def updatem():
+        if common.music_button.visible:
+            common.music_button.update(screen)
+        if common.mute_button.visible:
+            common.mute_button.update(screen)
+
+
     masks = [pygame.mask.from_surface(image) for image in images]
 
     progress = 0
@@ -68,6 +87,7 @@ def love_interaction():
 
     font = pygame.font.Font("kitasset/part2/font.ttf", 36) 
     instruction_text = ""
+    # ('\n')==text.split
     start_time = pygame.time.get_ticks()  
     time_limit = 20000  
 
@@ -92,17 +112,38 @@ def love_interaction():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit() 
-                running = False  
+                running = False
+            
+            if onoffm():
+                break
 
             if game_he:
+                screen.fill((0, 0, 0))  # Game Over / Win Screen
+
+                if progress >= 100:
+                    message_text1 = message_font.render("You have showered your dog with boundless care,", True, (255, 255, 255))
+                    message_text2 = message_font.render("making it blissful.", True, (255, 255, 255))
+                else:
+                    message_text1 = message_font.render("You did not pet your dog enough.", True, (255, 255, 255))
+                    message_text2= message_font.render("Your dog probably couldn't remember your face.", True, (255, 255, 255))
+
+                message_rect1 = message_text1.get_rect(center=(1280 // 2, (720 // 2) - 30))
+                message_rect2 = message_text2.get_rect(center=(1280 // 2, (720 // 2) + 30))
+
+                screen.blit(message_text1, message_rect1)
+                screen.blit(message_text2, message_rect2)
+
+                return_button.update(screen)
+
+                # Handle return button input
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     if return_button.checkforinput(pygame.mouse.get_pos()):
-                        running = False 
-                        if elapsed_time <= time_limit:
-                            part2b.second_b()
-                        else:
+                        running = False
+                        if progress >= 100:
                             part2.second_a()
-            
+                        else:
+                            part2b.second_b()
+
             if not game_he:
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     mouse_press = True  
@@ -189,7 +230,8 @@ def love_interaction():
             
         else:
             screen.fill((0, 0, 0)) 
-            message_font = pygame.font.Font(None, 54)
+            message_font = common.cutedisplay(36) 
+
 
             if progress >= 100:
                 message_text1 = message_font.render("You have showered your dog with boundless care,", True, (255, 255, 255))
@@ -210,6 +252,7 @@ def love_interaction():
                 if return_button.checkforinput(pygame.mouse.get_pos()):
                     running = False
 
+        updatem()
         pygame.display.flip()
 
     return

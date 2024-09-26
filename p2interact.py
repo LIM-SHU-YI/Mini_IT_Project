@@ -83,6 +83,7 @@ class DraggableObject:
                         screen.fill((0, 0, 0))
                         screen.blit(oh, oh_rect)
                         screen.blit(what, what_rect)
+                        common.huh.play()
                         pygame.display.flip()
                         
                         start_time = pygame.time.get_ticks()

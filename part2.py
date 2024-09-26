@@ -165,6 +165,7 @@ def second_a():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 common.running = False
+                pygame.quit()
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if common.music_button.visible and common.music_button.checkforinput(pygame.mouse.get_pos()):
                     common.click.play()
@@ -197,6 +198,7 @@ def second_a():
                     for event in pygame.event.get():
                         if event.type == pygame.QUIT:
                             common.running = False
+                            pygame.quit()
                             return
                     current_time = pygame.time.get_ticks()
                     elapsed_time = current_time - start_time
@@ -233,6 +235,7 @@ def second_a():
                 for event in pygame.event.get():
                     if event.type == pygame.QUIT:
                         common.running = False
+                        pygame.quit()
                     if event.type == pygame.MOUSEBUTTONDOWN:
                         if event.button == 1:
                             if b_img1.checkforinput(pygame.mouse.get_pos()):
