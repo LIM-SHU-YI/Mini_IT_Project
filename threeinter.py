@@ -37,9 +37,9 @@ secondimg = pygame.transform.scale(secondimg, (SCREEN_WIDTH, SCREEN_HEIGHT))
 clock = pygame.time.Clock()
 
 completed_games = {
-    "diary": False,
-    "puzzle": False,
-    "bone": False
+    "Diary": False,
+    "Puzzle": False,
+    "Bone": False
 }
 
 font = pygame.font.Font("kitasset/part2/font.ttf", 30)
@@ -164,31 +164,36 @@ def checkmdone():
 
 def run_minigames(minigame):
     if completed_games[minigame]:
-        print(f"{minigame} is already completed. You cannot play it again.")
-        return
-    if minigame == "diary":
+        # print(f"{minigame} is already completed. You cannot play it again.")
+        # return
+        common.running = True  # Continue running the game
+        return f"{minigame} is already completed. You cannot play it again."
+    if minigame == "Diary":
         diary()
-        completed_games["diary"] = True
-    if minigame == "puzzle":
+        completed_games["Diary"] = True
+    if minigame == "Puzzle":
         puzzle()
-        completed_games["puzzle"] = True
-    if minigame == "bone":
+        completed_games["Puzzle"] = True
+    if minigame == "Bone":
         bone()
-        completed_games["bone"] = True
+        completed_games["Bone"] = True
 
     if checkmdone():
         bags()      # call bag.py when all games are done
+
+    return ""
 
 def bags():
     bag()
 
 def kitinterface():
     infront()
-    global game_completed
+    global game_completed, message
     game_completed =  False
     clock = pygame.time.Clock()
     common.running = True
     mainroom = True
+    message = ""
 
     while common.running:
         for event in pygame.event.get():
@@ -215,6 +220,8 @@ def kitinterface():
                 if common.mute_button.visible:
                     common.mute_button.update(screen)
 
+                drawtext(screen, message, font, (255, 0, 0), 50, 650)  # Adjust position as needed
+
                 pygame.display.flip()
                 clock.tick(60)
 
@@ -226,17 +233,17 @@ def kitinterface():
                             if boneb_1.checkforinput(pygame.mouse.get_pos()):
                                 common.click.play()
                                 # bonegame()
-                                run_minigames("bone")
+                                message = run_minigames("Bone")
 
                             if bookb_1.checkforinput(pygame.mouse.get_pos()):
                                 common.click.play()
                                 # book()
-                                run_minigames("diary")
+                                message = run_minigames("Diary")
 
                             if picb_1.checkforinput(pygame.mouse.get_pos()):
                                 common.click.play()
                                 # puzz()
-                                run_minigames("puzzle")
+                                message = run_minigames("Puzzle")
 
                         if common.music_button.visible and common.music_button.checkforinput(pygame.mouse.get_pos()):
                             common.click.play()
