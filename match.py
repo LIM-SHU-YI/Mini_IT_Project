@@ -1,5 +1,3 @@
-# Modifications for match.py
-
 import pygame
 import sys
 import ctypes
@@ -7,7 +5,6 @@ import common
 from button import Button
 
 pygame.init()
-
 SCREEN_WIDTH = 1280
 SCREEN_HEIGHT = 720
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
@@ -15,11 +12,27 @@ pygame.display.set_caption("Memories")
 icon = pygame.image.load("asset/image/gameicon.png")
 pygame.display.set_icon(icon)
 
-# Initialize for improved text input
-# ctypes.windll.user32.SetProcessDPIAware()
-# ctypes.windll.imm32.ImmDisableIME(0)
+#Initialize for improved text input
+#ctypes.windll.user32.SetProcessDPIAware()
+ctypes.windll.imm32.ImmDisableIME(0)
 
-# Game states
+badendingtext = (
+    "The Grim Reaper feeling confused or indifferent,\n"
+    "continuing to coldly carry out his duties without change.\n\n"
+    "Grim Reaper said:\n "
+    "I will never understand these fleeting and fragile emotions.\n"
+    "Perhaps they were never meant for me."
+)
+
+happyendingtext = (
+    "The Grim Reaper deciding to no longer carry out his duties coldly but to guide souls more gently,\n"
+    "allowing them to leave peacefully.\n\n"
+    "Grim Reaper said:\n"
+    "I once thought I was merely the one who takes life, \n"
+    "but now I know that love is the true meaning of living."
+)
+
+#Game states
 MAIN_MENU = 0
 KIDS_VIEW = 1
 BOYFRIEND_VIEW = 2
@@ -28,7 +41,7 @@ DRAG_GAME = 4
 EMOTION_GAME = 5
 FINAL_RESULT = 6
 
-# Interface images
+#Interface images
 interface_bg = pygame.image.load("Photo used/Match/interfaceview.png")
 kidsinter_img = pygame.image.load("Photo used/Match/kidsinter.png")
 kids_img = pygame.image.load("Photo used/Match/kids.png")
@@ -40,11 +53,11 @@ back_img = pygame.image.load("asset/image/return.png")
 music_img = pygame.image.load("asset/image/m.png")
 mute_img = pygame.image.load("asset/image/mm.png")
 
-# Interface buttons
+#Interface buttons
 kidsinter_btn = Button(260, 245, image=kidsinter_img)
 boyfriendinter_btn = Button(646, 236, image=boyfriendinter_img)
 dogownerinter_btn = Button(1040, 236, image=dogownerinter_img)
-back_btn = Button(50, 50, image=back_img, scale=0.27)
+back_btn = Button(50, 50, image=back_img,scale=0.27)
 music_button = Button(1230, 50, image=music_img, scale=0.35)
 mute_button = Button(1230, 50, image=mute_img, scale=0.35, visible=False)
 
@@ -442,10 +455,87 @@ def draw_final_result(screen, emotion_game):
     screen.fill((255, 255, 255))
     if len(emotion_game.completed_emotions) == 3:
         result_text = "You have learned human emotions!"
+        ending_text = badendingtext
     else:
         result_text = "You did not learn human emotions!"
+        ending_text = happyendingtext
+
     text, text_rect = common.normal_text(result_text, common.cutedisplay(60), (0, 0, 0), (SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2))
     screen.blit(text, text_rect)
+    
+    if common.music_button.visible:
+        common.music_button.update(screen)
+    if common.mute_button.visible:
+        common.mute_button.update(screen)
+
+    pygame.display.flip()
+
+    start_time = pygame.time.get_ticks()
+    while pygame.time.get_ticks() - start_time < 3000:  # Display the result for 3 seconds
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                return False
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if common.music_button.visible and common.music_button.checkforinput(pygame.mouse.get_pos()):
+                    common.click.play()
+                    common.music_on_off()
+                elif common.mute_button.visible and common.mute_button.checkforinput(pygame.mouse.get_pos()):
+                    common.click.play()
+                    common.music_on_off()
+        
+        #Redraw screen update music button state
+        screen.fill((255, 255, 255))
+        screen.blit(text, text_rect)
+        if common.music_button.visible:
+            common.music_button.update(screen)
+        if common.mute_button.visible:
+            common.mute_button.update(screen)
+        pygame.display.flip()
+
+    return display_ending_text(screen, ending_text)  
+
+def drawtext(screen, text, font, colour, x, y):
+    lines = text.split('\n')
+    for i, line in enumerate(lines):
+        renderedtext = font.render(line, True, colour)
+        screen.blit(renderedtext, (x, y + i * renderedtext.get_height()))
+
+def display_ending_text(screen, text):
+    starttime = pygame.time.get_ticks()
+    displayduration = 20000
+    font = common.cutedisplay(25)
+    running = True
+
+    while running:
+        elapsedtime = pygame.time.get_ticks() - starttime
+        screen.fill((0,0,0))
+        drawtext(screen, text, font, (255, 255, 255), 50, 50)
+
+        if common.music_button.visible:
+            common.music_button.update(screen)
+        if common.mute_button.visible:
+            common.mute_button.update(screen)
+
+        pygame.display.flip()
+
+        if elapsedtime >= displayduration:
+            break
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                running = False
+                return
+            
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if common.music_button.visible and common.music_button.checkforinput(pygame.mouse.get_pos()):
+                    common.click.play()
+                    common.music_on_off()
+                elif common.mute_button.visible and common.mute_button.checkforinput(pygame.mouse.get_pos()):
+                    common.click.play()
+                    common.music_on_off()
+
+        pygame.time.Clock().tick(60)
+
+    return True
 
 def match_main():
     current_state = MAIN_MENU
@@ -506,10 +596,17 @@ def match_main():
             elif emotion_game_result == "FINAL_RESULT":
                 current_state = FINAL_RESULT
         elif current_state == FINAL_RESULT:
-            draw_final_result(screen, emotion_game)
+            continue_game = draw_final_result(screen, emotion_game)
+            if not continue_game:
+                running = False
+            else:
+                running = False  # End the game after showing the ending
 
-        if current_state != EMOTION_GAME:
-            updatem(screen)
+        if current_state != EMOTION_GAME and current_state != FINAL_RESULT:
+            if common.music_button.visible:
+                common.music_button.update(screen)
+            if common.mute_button.visible:
+                common.mute_button.update(screen)
 
         pygame.display.flip()
         clock.tick(60)
@@ -518,8 +615,8 @@ def match_main():
     sys.exit()
 
 common.music_playing = True
-pygame.mixer.music.play(-1) 
-# match_main()
+pygame.mixer.music.play(-1)  
+match_main()
 
 #Debuging Use
 #print(f"Before check: user_text='{self.user_text}', current_emotion='{self.current_emotion}'")
