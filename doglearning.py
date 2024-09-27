@@ -3,6 +3,7 @@ import random
 import os
 from button import Button
 from common import text_with_shadow, normal_text, cutedisplay
+import common
 import threeinter
 
 pygame.init()
@@ -51,8 +52,15 @@ audio_playing = False
 buttons_visible = False
 delay = None
 
+font = cutedisplay(40)
 
 audio_files = {word: pygame.mixer.Sound(f"Audio Used/{word.replace(' ', '_').lower()}.wav") for word in words}
+
+def drawtext(screen, text, font, colour, x, y):
+    lines = text.split('\n')
+    for i, line in enumerate(lines):
+        rendered_text = font.render(line, True, colour)
+        screen.blit(rendered_text, (x, y + i * rendered_text.get_height()))
 
 def display_result(result):
     screen.fill((255, 255, 255))
@@ -117,7 +125,7 @@ def handle_button_click(word):
         game_over = True
 
 def draw_game():
-    global delay
+    global delay, font
     screen.blit(background, (0, 0))
     
     if not game_over:
@@ -132,14 +140,20 @@ def draw_game():
     else:
         screen.fill((255, 255, 255))
         if wrong_answers >= 3:
-            message = "You did not learn how to use the button"
+            message = (
+                        "\n\n"
+                        "Bad Ending:\n\n"
+                        "Hachi did not learn how to use the button\n"
+                        "and could not communicate with its owner.\n\n" 
+                        "Its owner throw it away.")
+            drawtext(screen,message,font,(0, 0, 0), 50, 50)
+            pygame.display.flip()
         else:
-            message = "You know how to use the button already"
+            message = "Hachi learned how to use the button!"
             if delay is None:
                 delay = pygame.time.get_ticks()
-              
-        game_over_text = normal_text(message, cutedisplay(40), (0, 0, 0), (SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2))
-        screen.blit(*game_over_text)
+            drawtext(screen,message,font,(0, 0, 0), 320, 360)
+            pygame.display.flip()
 
         if delay:
             current_time = pygame.time.get_ticks()
@@ -161,6 +175,7 @@ def doglearning_main_game_loop():
                 running = False
             
             if event.type == pygame.MOUSEBUTTONDOWN and not game_over:
+                common.click.play()
                 mouse_pos = pygame.mouse.get_pos()
                 
                 if replay_button.checkforinput(mouse_pos) and replay_count > 0:
@@ -188,4 +203,4 @@ def doglearning_main_game_loop():
     pygame.quit()
 
 
-# doglearning_main_game_loop()
+doglearning_main_game_loop()

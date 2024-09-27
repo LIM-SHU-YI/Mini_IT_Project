@@ -1,6 +1,17 @@
 import pygame
 from button import Button
 import common
+import logging
+
+# Clear the log file at the start
+open('error_log.txt', 'w').close()
+
+# Configure logging
+logging.basicConfig(
+    filename='error_log.txt',  # Log file to store messages
+    level=logging.ERROR,        # Log only error messages and above
+    format='%(asctime)s - %(levelname)s - %(message)s'  # Format of log messages
+)
 
 pygame.init()
 
@@ -41,47 +52,53 @@ def main_interface():
 clock = pygame.time.Clock()
 FPS = 60  # Set desired frame rate
 
-while common.running:
-    clock.tick(FPS)  # Limit the frame rate
-    
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            common.running = False
-            break
+try:
+    while common.running:
+        clock.tick(FPS)  # Limit the frame rate
+        
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                common.running = False
+                break
 
-        if event.type == pygame.MOUSEBUTTONDOWN:
-            if common.current_scene == "main_menu":
-                if play.checkforinput(pygame.mouse.get_pos()):
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if common.current_scene == "main_menu":
+                    if play.checkforinput(pygame.mouse.get_pos()):
+                        common.click.play()
+                        pygame.time.delay(250)
+                        common.current_scene = "first_scene"
+                    elif credit.checkforinput(pygame.mouse.get_pos()):
+                        common.click.play()
+                        pygame.time.delay(250)
+                        common.current_scene = "credit"
+                    elif quit.checkforinput(pygame.mouse.get_pos()):
+                        common.click.play()
+                        pygame.time.delay(250)
+                        common.running = False
+                        break
+                
+                if common.music_button.visible and common.music_button.checkforinput(pygame.mouse.get_pos()):
                     common.click.play()
-                    pygame.time.delay(250)
-                    common.current_scene = "first_scene"
-                elif credit.checkforinput(pygame.mouse.get_pos()):
+                    common.music_on_off()
+                elif common.mute_button.visible and common.mute_button.checkforinput(pygame.mouse.get_pos()):
                     common.click.play()
-                    pygame.time.delay(250)
-                    common.current_scene = "credit"
-                elif quit.checkforinput(pygame.mouse.get_pos()):
-                    common.click.play()
-                    pygame.time.delay(250)
-                    common.running = False
-                    break
-            
-            if common.music_button.visible and common.music_button.checkforinput(pygame.mouse.get_pos()):
-                common.click.play()
-                common.music_on_off()
-            elif common.mute_button.visible and common.mute_button.checkforinput(pygame.mouse.get_pos()):
-                common.click.play()
-                common.music_on_off()
+                    common.music_on_off()
 
-    # Update and draw the current scene
-    if common.current_scene == "main_menu":
-        main_interface()
-    elif common.current_scene == "first_scene":
-        from part1 import first_scene
-        first_scene()
-    elif common.current_scene == "credit":
-        from credit import credits
-        credits(event)
+        # Update and draw the current scene
+        if common.current_scene == "main_menu":
+            main_interface()
+        elif common.current_scene == "first_scene":
+            from part1 import first_scene
+            first_scene()
+        elif common.current_scene == "credit":
+            from credit import credits
+            credits(event)
 
-    pygame.display.flip()
+        pygame.display.flip()
 
-pygame.quit()
+except Exception as e:
+    # Log the exception with traceback
+    logging.error("An exception occurred", exc_info=True)
+    print("Oops! Something went wrong. Please check error_log.txt for details.")
+finally:
+    pygame.quit()

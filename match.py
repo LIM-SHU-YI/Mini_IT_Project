@@ -14,22 +14,26 @@ pygame.display.set_icon(icon)
 
 #Initialize for improved text input
 #ctypes.windll.user32.SetProcessDPIAware()
-ctypes.windll.imm32.ImmDisableIME(0)
+# ctypes.windll.imm32.ImmDisableIME(0)
 
 badendingtext = (
+    "Bad Ending\n\n"
     "The Grim Reaper feeling confused or indifferent,\n"
     "continuing to coldly carry out his duties without change.\n\n"
     "Grim Reaper said:\n "
     "I will never understand these fleeting and fragile emotions.\n"
-    "Perhaps they were never meant for me."
+    "Perhaps they were never meant for me.\n\n\n"
+    "-The End-"
 )
 
 happyendingtext = (
-    "The Grim Reaper deciding to no longer carry out his duties coldly but to guide souls more gently,\n"
+    "Happy Ending\n\n"
+    "The Grim Reaper deciding to no longer carry out his duties coldly \nbut to guide souls more gently, "
     "allowing them to leave peacefully.\n\n"
     "Grim Reaper said:\n"
     "I once thought I was merely the one who takes life, \n"
-    "but now I know that love is the true meaning of living."
+    "but now I know that love is the true meaning of living.\n\n\n"
+    "-The End-"
 )
 
 #Game states
@@ -191,6 +195,7 @@ class RELICSITEM:
                 if self.start_btn.checkforinput(event.pos) and not self.game_started:
                     self.game_started = True
                 elif back_btn.checkforinput(event.pos):
+                    common.click.play()
                     return "MAIN_MENU"
 
             if event.type == pygame.MOUSEBUTTONUP and self.game_started:
@@ -381,6 +386,7 @@ class EmotionGame:
                 if self.total_hint_count > 0 and self.hint_btn.checkforinput(event.pos):
                     self.current_hint = self.get_hint()
                 if back_btn.checkforinput(event.pos):
+                    common.click.play()
                     return "MAIN_MENU"
                
             if event.type == pygame.KEYDOWN:
@@ -454,11 +460,11 @@ def draw_view(screen, image):
 def draw_final_result(screen, emotion_game):
     screen.fill((255, 255, 255))
     if len(emotion_game.completed_emotions) == 3:
-        result_text = "You have learned human emotions!"
-        ending_text = badendingtext
-    else:
-        result_text = "You did not learn human emotions!"
+        result_text = "The Grim Reaper have learned human emotions!"
         ending_text = happyendingtext
+    else:
+        result_text = "The Grim Reaper did not learn human emotions!"
+        ending_text = badendingtext
 
     text, text_rect = common.normal_text(result_text, common.cutedisplay(60), (0, 0, 0), (SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2))
     screen.blit(text, text_rect)
@@ -502,8 +508,8 @@ def drawtext(screen, text, font, colour, x, y):
 
 def display_ending_text(screen, text):
     starttime = pygame.time.get_ticks()
-    displayduration = 20000
-    font = common.cutedisplay(25)
+    displayduration = 30000
+    font = common.cutedisplay(35)
     running = True
 
     while running:
@@ -554,6 +560,7 @@ def match_main():
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if current_state == MAIN_MENU:
                     if drag_game.start_btn.checkforinput(event.pos) and not drag_game.all_items_placed:
+                        common.click.play()
                         current_state = DRAG_GAME
                     elif kidsinter_btn.checkforinput(event.pos):
                         current_state = KIDS_VIEW
@@ -567,6 +574,7 @@ def match_main():
                             current_state = EMOTION_GAME
                 elif current_state in [KIDS_VIEW, BOYFRIEND_VIEW, DOGOWNER_VIEW]:
                     if back_btn.checkforinput(event.pos):
+                        common.click.play()
                         current_state = MAIN_MENU
 
                 if current_state != EMOTION_GAME:
@@ -616,7 +624,7 @@ def match_main():
 
 common.music_playing = True
 pygame.mixer.music.play(-1)  
-match_main()
+# match_main()
 
 #Debuging Use
 #print(f"Before check: user_text='{self.user_text}', current_emotion='{self.current_emotion}'")
