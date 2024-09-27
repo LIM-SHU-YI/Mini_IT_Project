@@ -460,10 +460,10 @@ def draw_view(screen, image):
 def draw_final_result(screen, emotion_game):
     screen.fill((255, 255, 255))
     if len(emotion_game.completed_emotions) == 3:
-        result_text = "You have learned human emotions!"
+        result_text = "The Grim Reaper have learned human emotions!"
         ending_text = happyendingtext
     else:
-        result_text = "You did not learn human emotions!"
+        result_text = "The Grim Reaper did not learn human emotions!"
         ending_text = badendingtext
 
     text, text_rect = common.normal_text(result_text, common.cutedisplay(60), (0, 0, 0), (SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2))
