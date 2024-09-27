@@ -90,6 +90,7 @@ def love_interaction():
     # ('\n')==text.split
     start_time = pygame.time.get_ticks()  
     time_limit = 20000  
+    message_font = common.cutedisplay(36) 
 
     return_img = pygame.image.load("asset/image/return.png")
     return_button = Button(50, 50, image=return_img, scale=0.27)    
