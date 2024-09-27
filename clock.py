@@ -163,7 +163,7 @@ def clock_main_loop():
             
             rotation_result = check_hour_hand_position(cumulative_angle)
             if rotation_result == "clockwise":
-                message = "Bad Ending: The dog did not become younger and it die soon"
+                message = "Bad Ending: The dog did not become younger and it will die soon"
                 show_message = True
                 message_timer = pygame.time.get_ticks()
             elif rotation_result == "anticlockwise":
@@ -181,7 +181,7 @@ def clock_main_loop():
             
             if pygame.time.get_ticks() - message_timer > 2000:
                 show_message = False
-                if message == "The dog did not become younger and it die soon":
+                if message == "Bad Ending: The dog did not become younger and it will die soon":
                     current_background = dog_old
                     updatem()
                     pygame.display.flip()
