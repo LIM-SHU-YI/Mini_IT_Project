@@ -55,7 +55,7 @@ def display_text_centered(screen, text, font, color):
 def text_slide_sequence():
     font = pygame.font.Font("kitasset/part2/font.ttf", 41) 
     text_slides = [
-        "Guided by Death, ",
+        "Guided by Grim Reaper, ",
         "Hachi found its owner at the station in the other world.",
         "Hachi fulfilled its final wish.",
         "Their souls ascended, reunited for eternity.",
