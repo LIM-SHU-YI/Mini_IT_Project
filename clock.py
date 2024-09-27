@@ -183,6 +183,8 @@ def clock_main_loop():
                 show_message = False
                 if message == "The dog did not become younger and it die soon":
                     current_background = dog_old
+                    updatem()
+                    pygame.display.flip()
                 elif message == "The dog back to the day it met its owner":
                     # current_background = first_met
                     show_message = True
@@ -191,6 +193,7 @@ def clock_main_loop():
                     message_rect = message_surface.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2))
                     screen.blit(message_surface, message_rect)
                     return_button.update(screen)
+                    updatem()
                     pygame.display.flip()
 
                     if event.type == pygame.MOUSEBUTTONDOWN:
@@ -204,6 +207,8 @@ def clock_main_loop():
                 cumulative_angle = 0
         else:
             draw_scene(screen, hour_angle, minute_angle, zoom_factor, not clock_stopped)
+            updatem()
+            pygame.display.flip()
 
         if game_is_done:
             game_completed = True

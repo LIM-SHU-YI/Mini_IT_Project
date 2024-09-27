@@ -138,6 +138,7 @@ def love_interaction():
                 # Handle return button input
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     if return_button.checkforinput(pygame.mouse.get_pos()):
+                        common.click.play()
                         running = False
                         if progress >= 100:
                             part2.second_a()

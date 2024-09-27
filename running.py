@@ -213,6 +213,7 @@ def running_race_game():
                 elif event.type == pygame.MOUSEBUTTONDOWN:
                     if event.button == 1:
                         if return_button.checkforinput(event.pos):
+                            common.click.play()
                             part3.first_scene()
                             waiting = False
 

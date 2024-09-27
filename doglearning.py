@@ -3,6 +3,7 @@ import random
 import os
 from button import Button
 from common import text_with_shadow, normal_text, cutedisplay
+import common
 import threeinter
 
 pygame.init()
@@ -161,6 +162,7 @@ def doglearning_main_game_loop():
                 running = False
             
             if event.type == pygame.MOUSEBUTTONDOWN and not game_over:
+                common.click.play()
                 mouse_pos = pygame.mouse.get_pos()
                 
                 if replay_button.checkforinput(mouse_pos) and replay_count > 0:

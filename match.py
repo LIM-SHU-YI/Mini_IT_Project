@@ -17,6 +17,7 @@ pygame.display.set_icon(icon)
 # ctypes.windll.imm32.ImmDisableIME(0)
 
 badendingtext = (
+    "Bad Ending\n\n"
     "The Grim Reaper feeling confused or indifferent,\n"
     "continuing to coldly carry out his duties without change.\n\n"
     "Grim Reaper said:\n "
@@ -26,6 +27,7 @@ badendingtext = (
 )
 
 happyendingtext = (
+    "Happy Ending\n\n"
     "The Grim Reaper deciding to no longer carry out his duties coldly \nbut to guide souls more gently, "
     "allowing them to leave peacefully.\n\n"
     "Grim Reaper said:\n"
@@ -193,6 +195,7 @@ class RELICSITEM:
                 if self.start_btn.checkforinput(event.pos) and not self.game_started:
                     self.game_started = True
                 elif back_btn.checkforinput(event.pos):
+                    common.click.play()
                     return "MAIN_MENU"
 
             if event.type == pygame.MOUSEBUTTONUP and self.game_started:
@@ -383,6 +386,7 @@ class EmotionGame:
                 if self.total_hint_count > 0 and self.hint_btn.checkforinput(event.pos):
                     self.current_hint = self.get_hint()
                 if back_btn.checkforinput(event.pos):
+                    common.click.play()
                     return "MAIN_MENU"
                
             if event.type == pygame.KEYDOWN:
@@ -556,6 +560,7 @@ def match_main():
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if current_state == MAIN_MENU:
                     if drag_game.start_btn.checkforinput(event.pos) and not drag_game.all_items_placed:
+                        common.click.play()
                         current_state = DRAG_GAME
                     elif kidsinter_btn.checkforinput(event.pos):
                         current_state = KIDS_VIEW
@@ -569,6 +574,7 @@ def match_main():
                             current_state = EMOTION_GAME
                 elif current_state in [KIDS_VIEW, BOYFRIEND_VIEW, DOGOWNER_VIEW]:
                     if back_btn.checkforinput(event.pos):
+                        common.click.play()
                         current_state = MAIN_MENU
 
                 if current_state != EMOTION_GAME:
